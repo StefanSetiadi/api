@@ -1,0 +1,512 @@
+{
+    "openapi" : "3.0.3",
+    "info": {
+        "title": "User API",
+        "description": "User API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://apitubesmppl.000webhostapp.com/"
+        }
+    ],
+    "paths": {
+        "/api/users/register.php" : {
+            "post" : {
+                "tags": ["Success"],
+                "description": "Register new user",
+                "requestBody" : {
+                    "content": {
+                        "application/json" : {
+                            "examples": {
+                                "Antonio" : {
+                                    "description": "Register user Antonio",
+                                    "value" : {
+                                        "username" : "Antonio",
+                                        "email" : "daniel.antonioramirez@example.com",
+                                        "password" : "secret",
+                                        "name" : "Daniel Antonio Ramirez"
+                                        
+                                    }
+                                }
+                            },
+                            "schema" : {
+                                "type": "object",
+                                "required": [
+                                    "name","password","username","email"
+                                ],
+                                "properties": {
+                                    "username" : {
+                                        "type": "string"
+                                    },
+                                    "email" : {
+                                        "type": "string"
+                                    },
+                                    "password" : {
+                                        "type": "string"
+                                    },
+                                    "name" : {
+                                        "type": "string"
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400" : {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Validation error",
+                                        "value" : {
+                                            "erros" : {
+                                                "username" : [
+                                                    "The username field is required"
+                                                ],
+                                                "email" : [
+                                                    "The username field is required"
+                                                ],
+                                                "password" : [
+                                                    "The username field is required"
+                                                ],
+                                                "name" : [
+                                                    "The username field is required"
+                                                ],
+                                                "message" : [
+                                                    "username or email already registered"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "201" : {
+                        "description": "Succes register user",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "success" : {
+                                        "description": "Success register user",
+                                        "value" : {
+                                            "data" : {
+                                                "id" : 1,
+                                                "name" : "Daniel Antonio Ramirez",
+                                                "username" : "Antonio",
+                                                "email" : "daniel.antonioramirez@example.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "username" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                }
+                                                ,
+                                                "email" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/login.php" : {
+            "post" : {
+                "tags": ["Success"],
+                "description": "Login user",
+                "requestBody" : {
+                    "content": {
+                        "application/json" : {
+                            "examples": {
+                                "Using a Username" : {
+                                    "description": "Sign in using Username",
+                                    "value" : {
+                                        "username" : "Antonio",
+                                        "password" : "secret"
+                                    }
+                                }
+                            },
+                            "schema" : {
+                                "type": "object",
+                                "properties": {
+                                    "username" : {
+                                        "description": "If you log in using your username",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "email" : {
+                                        "description": "If you log in using your email",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "password" : {
+                                        "type": "string",
+                                        "nullable": false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201" : {
+                        "description": "Success login",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "username" : {
+                                                    "type": "string"
+                                                },
+                                                "email" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "token" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/current.php" : {
+            "get" : {
+                "tags": ["Success"],
+                "description": "Get current user",
+                "parameters": [
+                    {
+                        "name" : "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success get current user",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "username" : {
+                                                    "type": "string"
+                                                },
+                                                "email" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "bio" : {
+                                                    "type": "string"
+                                                },
+                                                "avatar" : {
+                                                    "type": "string"
+                                                },
+                                                "verified" : {
+                                                    "type": "integer"
+                                                },
+                                                "countpost" : {
+                                                    "type": "integer"
+                                                },
+                                                "countarticle" : {
+                                                    "type": "integer"
+                                                },
+                                                "following" : {
+                                                    "type": "integer"
+                                                },
+                                                "followers" : {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/list-following" : {
+            "get" : {
+                "description": "Get list following",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "List following",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "array",
+                                            "items" : {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id" : {
+                                                        "type": "number"
+                                                    },
+                                                    "username" : {
+                                                        "type": "string"
+                                                    },
+                                                    "bio" : {
+                                                        "type": "string"
+                                                    },
+                                                    "countpost" : {
+                                                        "type": "number"
+                                                    },
+                                                    "countarticles" : {
+                                                        "type": "number"
+                                                    },
+                                                    "verified" : {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/list-followers" : {
+            "get" : {
+                "description": "Get list followers",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "List followers",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "array",
+                                            "items" : {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id" : {
+                                                        "type": "number"
+                                                    },
+                                                    "username" : {
+                                                        "type": "string"
+                                                    },
+                                                    "bio" : {
+                                                        "type": "string"
+                                                    },
+                                                    "countpost" : {
+                                                        "type": "number"
+                                                    },
+                                                    "countarticles" : {
+                                                        "type": "number"
+                                                    },
+                                                    "verified" : {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/profile" : {
+            "patch" : {
+                "tags": ["default"],
+                "description": "Update current user's profile",
+                "parameters": [
+                    {
+                        "name" : "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "requestBody" : {
+                    "content": {
+                        "application/json" : {
+                            "schema" : {
+                                "type": "object",
+                                "properties": {
+                                    "username" : {
+                                        "type": "string"
+                                    },
+                                    "email" : {
+                                        "type": "string"
+                                    },
+                                    "bio" : {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200" : {
+                        "description": "Succes update profile",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "success" : {
+                                        "description": "Success update profile",
+                                        "value" : {
+                                            "data" : {
+                                                "id" : 0,
+                                                "name" : "Daniel Antonio Ramirez",
+                                                "username" : "Antonio",
+                                                "email" : "daniel.antonioramirez@example.com",
+                                                "bio" : "Hi, I'm writer and traveler. Exploring the world one story at a time. 🌍✍️"
+                                            }
+                                        }
+                                    }
+                                },
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "username" : {
+                                                    "type": "string"
+                                                },
+                                                "email" : {
+                                                    "type": "string"
+                                                },
+                                                "bio" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+
+
+        "/api/users/current/uploadAvatar" : {
+            "post" : {
+                "tags": ["default"],
+                "description": "name file : avatar",
+                "requestBody" : {
+                    "content": {
+                        "image/png" : {}
+                    }
+                }
+            }
+        },
+        "/api/users/logout.php" : {
+            "get" : {
+                "tags": ["Success"],
+                "description": "Logout current user",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "Success logout user",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
