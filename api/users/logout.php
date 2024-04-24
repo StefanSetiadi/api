@@ -10,7 +10,7 @@
 
   $method = $_SERVER['REQUEST_METHOD'];
 
-  if($method == 'DELETE'){
+  if($method == 'GET'){
     // Instantiate DB & connect
     $database = new Database();
     $db = $database->connect();

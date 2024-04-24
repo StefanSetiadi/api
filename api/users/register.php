@@ -20,7 +20,7 @@
 
     if (isset($data->username) && isset($data->password) && isset($data->name) && isset($data->email)){
       if(filter_var($data->email, FILTER_VALIDATE_EMAIL) !== false){
-        // check if username exists in the same database
+        // check if username or email exists in the same database
         $user = new User($db);
         $query = 'SELECT * FROM users WHERE username = :username OR email = :email';
         $data->username = htmlspecialchars(strip_tags($data->username));

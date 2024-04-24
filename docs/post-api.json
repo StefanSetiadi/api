@@ -1,54 +1,37 @@
 {
     "openapi" : "3.0.3",
     "info": {
-        "title": "User API",
-        "description": "User API",
+        "title": "Post API",
+        "description": "Post API",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "https://localhost/api/"
+            "url": "https://apitubesmppl.000webhostapp.com/"
         }
     ],
     "paths": {
-        "/api/users/register.php" : {
+        "/api/post/create.php" : {
             "post" : {
-                "tags": ["Success"],
-                "description": "Register new user",
+                "tags": ["target"],
+                "description": "Create new post",
                 "requestBody" : {
                     "content": {
-                        "application/json" : {
-                            "examples": {
-                                "Antonio" : {
-                                    "description": "Register user Antonio",
-                                    "value" : {
-                                        "username" : "Antonio",
-                                        "email" : "daniel.antonioramirez@example.com",
-                                        "password" : "secret",
-                                        "name" : "Daniel Antonio Ramirez"
-                                        
-                                    }
-                                }
-                            },
+                        "multipart/form-data" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
-                                    "name","password","username","email"
+                                    "image","caption"
                                 ],
                                 "properties": {
-                                    "username" : {
-                                        "type": "string"
+                                    "image" : {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Upload Image"
                                     },
-                                    "email" : {
+                                    "caption" : {
                                         "type": "string"
-                                    },
-                                    "password" : {
-                                        "type": "string"
-                                    },
-                                    "name" : {
-                                        "type": "string"
-                                    }
-                                    
+                                    }     
                                 }
                             }
                         }
@@ -91,8 +74,8 @@
                         "content": {
                             "application/json" : {
                                 "examples": {
-                                    "success" : {
-                                        "description": "Success register user",
+                                    "default" : {
+                                        "description": "default register user",
                                         "value" : {
                                             "data" : {
                                                 "id" : 1,
@@ -135,9 +118,9 @@
                 }
             }
         },
-        "/api/users/login.php" : {
+        "/api/post/update.php" : {
             "post" : {
-                "tags": ["Success"],
+                "tags": ["target"],
                 "description": "Login user",
                 "requestBody" : {
                     "content": {
@@ -175,7 +158,7 @@
                 },
                 "responses": {
                     "201" : {
-                        "description": "Success login",
+                        "description": "default login",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -209,9 +192,9 @@
                 }
             }
         },
-        "/api/users/current.php" : {
+        "/api/post/read.php" : {
             "get" : {
-                "tags": ["Success"],
+                "tags": ["target"],
                 "description": "Get current user",
                 "parameters": [
                     {
@@ -221,7 +204,7 @@
                 ],
                 "responses": {
                     "200" : {
-                        "description": "Success get current user",
+                        "description": "default get current user",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -273,7 +256,71 @@
                 }
             }
         },
-        "/api/users/list-following" : {
+        "/api/post/search.php?={id}" : {
+            "get" : {
+                "tags": ["default"],
+                "description": "Get current user",
+                "parameters": [
+                    {
+                        "name" : "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "default get current user",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "username" : {
+                                                    "type": "string"
+                                                },
+                                                "email" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "bio" : {
+                                                    "type": "string"
+                                                },
+                                                "avatar" : {
+                                                    "type": "string"
+                                                },
+                                                "verified" : {
+                                                    "type": "integer"
+                                                },
+                                                "countpost" : {
+                                                    "type": "integer"
+                                                },
+                                                "countarticle" : {
+                                                    "type": "integer"
+                                                },
+                                                "following" : {
+                                                    "type": "integer"
+                                                },
+                                                "followers" : {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/post/create-comment.php?={id}" : {
             "get" : {
                 "description": "Get list following",
                 "parameters": [
@@ -327,7 +374,7 @@
                 }
             }
         },
-        "/api/users/list-followers" : {
+        "/api/post/like.php" : {
             "get" : {
                 "description": "Get list followers",
                 "parameters": [
@@ -381,77 +428,46 @@
                 }
             }
         },
-        "/api/users/profile.php" : {
-            "put" : {
-                "tags": ["default"],
-                "description": "Update current user's profile",
+        "/api/post/delete-comment.php" : {
+            "get" : {
+                "description": "Get list following",
                 "parameters": [
                     {
-                        "name" : "Authorization",
+                        "name": "Authorization",
                         "in": "header"
                     }
                 ],
-                "requestBody" : {
-                    "content": {
-                        "multipart/form-data" : {
-                            "schema" : {
-                                "type": "object",
-                                "properties": {
-                                    "name" : {
-                                        "type": "string"
-                                    },
-                                    "bio" : {
-                                        "type": "string"
-                                    },
-                                    "avatar" : {
-                                        "type": "string",
-                                        "format": "binary",
-                                        "description": "Upload Image"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200" : {
-                        "description": "Succes update profile",
+                        "description": "List following",
                         "content": {
                             "application/json" : {
-                                "examples": {
-                                    "success" : {
-                                        "description": "Success update profile",
-                                        "value" : {
-                                            "data" : {
-                                                "id" : 0,
-                                                "name" : "Daniel Antonio Ramirez",
-                                                "username" : "Antonio",
-                                                "email" : "daniel.antonioramirez@example.com",
-                                                "bio" : "Hi, I'm writer and traveler. Exploring the world one story at a time. 🌍✍️"
-                                            }
-                                        }
-                                    }
-                                },
                                 "schema" : {
                                     "type": "object",
                                     "properties": {
                                         "data" : {
-                                            "type": "object",
-                                            "properties": {
-                                                "id" : {
-                                                    "type": "number"
-                                                },
-                                                "name" : {
-                                                    "type": "string"
-                                                },
-                                                "username" : {
-                                                    "type": "string"
-                                                },
-                                                "email" : {
-                                                    "type": "string"
-                                                },
-                                                "bio" : {
-                                                    "type": "string"
+                                            "type": "array",
+                                            "items" : {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id" : {
+                                                        "type": "number"
+                                                    },
+                                                    "username" : {
+                                                        "type": "string"
+                                                    },
+                                                    "bio" : {
+                                                        "type": "string"
+                                                    },
+                                                    "countpost" : {
+                                                        "type": "number"
+                                                    },
+                                                    "countarticles" : {
+                                                        "type": "number"
+                                                    },
+                                                    "verified" : {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             }
                                         },
@@ -466,25 +482,9 @@
                 }
             }
         },
-
-
-
-
-        "/api/users/current/uploadAvatar" : {
-            "post" : {
-                "tags": ["default"],
-                "description": "name file : avatar",
-                "requestBody" : {
-                    "content": {
-                        "image/png" : {}
-                    }
-                }
-            }
-        },
-        "/api/users/logout.php" : {
+        "/api/post/unlike.php" : {
             "get" : {
-                "tags": ["Success"],
-                "description": "Logout current user",
+                "description": "Get list followers",
                 "parameters": [
                     {
                         "name": "Authorization",
@@ -493,14 +493,40 @@
                 ],
                 "responses": {
                     "200" : {
-                        "description": "Success logout user",
+                        "description": "List followers",
                         "content": {
                             "application/json" : {
                                 "schema" : {
                                     "type": "object",
                                     "properties": {
                                         "data" : {
-                                            "type": "boolean"
+                                            "type": "array",
+                                            "items" : {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id" : {
+                                                        "type": "number"
+                                                    },
+                                                    "username" : {
+                                                        "type": "string"
+                                                    },
+                                                    "bio" : {
+                                                        "type": "string"
+                                                    },
+                                                    "countpost" : {
+                                                        "type": "number"
+                                                    },
+                                                    "countarticles" : {
+                                                        "type": "number"
+                                                    },
+                                                    "verified" : {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
                                         }
                                     }
                                 }

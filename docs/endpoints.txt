@@ -1,11 +1,12 @@
 List end point API MPPL
 (Stefan)
 User 
--	Post : Register = [Username, Email, Password, Verifikasi password] 
+-	Post : Register = [Username, Email, Password] 
 -	Post : Login = [Email, Password]
 -	Get : Current User = [Id, Username, Bio, CountPost, CountArticle, Following, Followers, StatusVerified]
 -	Get : ListFollowers = [IdUser, Username, Bio, CountPost, CountArticle, Following, Followers, StatusVerified]
 -	Post : Profile = [Username, Bio]
+Update user (Name, Bio)
 
 (Faisal)
 Postingan
@@ -19,11 +20,18 @@ Catatan :
 2. Postingan menggunakan like sama comment
 3. 
 
+(Harist)
 Article
 -	Post : CreateArticle = [Masih belum kepikiran]
 -	Get : ListPost = [IdUser,…]
 -	Get : ListTrendArticle = [IdArticle, Title, Content, UrlImage, Date, ListPeopleLike]
 -	Get : DetailArticle = [IdArticle, Title, Content, UrlImage, Date, ListPeopleComment, ListPeopleLike, Tag]
+
+
+
+
+
+
 Recommend User
 -	Get : ListRecommendUser = [IdUser, Username, StatusVerified]
 Recomment Article

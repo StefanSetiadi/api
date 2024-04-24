@@ -24,7 +24,7 @@
       $user->password = $data->password;
       
       // login query
-      $result = $user->login();
+      $result = $user->loginUsername();
       $num = $result->rowCount();
       
       if($num > 0) {
@@ -62,11 +62,64 @@
           ))
         );
       }
+    } else if(isset($data->email) && isset($data->password)){
+        if(filter_var($data->email, FILTER_VALIDATE_EMAIL) !== false){
+          $user = new User($db);
+          $user->email = $data->email;
+          $user->password = $data->password;
+          
+          // login query
+          $result = $user->loginEmail();
+          $num = $result->rowCount();
+          
+          if($num > 0) {
+            $result = $result->fetch(PDO::FETCH_ASSOC); 
+            // create token
+            $timestamp = time();
+            $raw_token = $result['id'] . '|' . $timestamp;
+            $encrypted_token = hash_hmac('sha256', $raw_token, '3bacd2366b2a95d35b52dea21c35e1de47bc986c9da79da4f6666d7f5ea1ba38');
+
+            $user = new User($db);
+            $query = 'UPDATE users SET token= :token WHERE id = :id';
+            $stmt = $user->conn->prepare($query);
+            $stmt->bindParam(':id', $result['id']);
+            $stmt->bindParam(':token', $encrypted_token);
+            if($stmt->execute()) {
+              http_response_code(200);
+              echo json_encode(
+                array('data' => array (
+                  'id' => $result['id'],
+                  'username' => $result['username'],
+                  'email' => $result['email'],
+                  'name' => $result['name'],
+                  'token' => $encrypted_token
+                ))
+              );
+            } else {
+              printf("Error: %s.\n", $stmt->error);
+            }
+
+          
+          } else {
+            echo json_encode(
+              array('errors' => array(
+                'message' => 'email or password wrong'
+              ))
+            );
+          }
+        } else {
+          echo json_encode(
+            array('errors' => array (
+              'email' => 'The email field must be a valid email address.'
+            ))
+          );
+        }
+
     } else {
       http_response_code(400);
       $errors = [];
-      if (!isset($data->username)) {
-        $errors['username'][] = 'The username field is required.';
+      if (!isset($data->username) && !isset($data->email)) {
+        $errors['login'][] = 'Either a username or an email must be provided for login.';
       }
       if (!isset($data->password)) {
           $errors['password'][] = 'The password field is required.';
