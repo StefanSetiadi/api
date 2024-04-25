@@ -10,7 +10,7 @@
 
   $method = $_SERVER['REQUEST_METHOD'];
 
-  if($method == 'PUT'){  
+  if($method == 'POST'){  
     // Instantiate DB & connect
     $database = new Database();
     $db = $database->connect();
@@ -30,20 +30,30 @@
             exit();
         }
 
-        // Get raw posted data
-        $data = json_decode(file_get_contents("php://input"));
+        // // Get raw posted data
+        // $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($data->name) || isset($data->bio) || isset($data->avatar)){
-            $user->name = isset($data->name) ? $data->name : NULL;
-            $user->bio = isset($data->bio) ? $data->bio : NULL;
-            $user->avatar = isset($data->avatar) ? $data->avatar : NULL;
+        if (isset($_POST['name']) || isset($_POST['bio']) || isset($_FILES['avatar'])){
+            if(isset($_FILES['avatar'])){
+                $avatar_tmp = $_FILES['avatar']['tmp_name'];
+                $name_avatar = $_FILES['avatar']['name'];
+        
+                move_uploaded_file($avatar_tmp, 'avatar/'.$name_avatar);
+                $user->avatar = 'http://localhost/api/api/users/avatar/' . $name_avatar;
+            } else {
+                $user->avatar = NULL;
+            }
+
+
+            $user->name = isset($_POST['name']) ? $_POST['name'] : NULL;
+            $user->bio = isset($_POST['bio']) ? $_POST['bio'] : NULL;
             $update = $user->update();
             echo $update;
         } else {
             http_response_code(400);
             $errors = [];
             if (!isset($data->name) || !isset($data->bio) || !isset($data->avatar)) {
-                $errors['message'][] = 'Use the name, bio, or avatar fields to update your profile';
+                $errors['message'][] = 'Use the name, bio, or upload avatar photo fields to update your profile';
             }
             echo json_encode(['errors' => $errors]);
         }
