@@ -150,6 +150,40 @@
       return false;
     }
 
+    // Follow User
+    public function follow($iduser) {
+      // Create query
+      $query = 'SELECT * FROM USERS WHERE token= ' . '"' .$this->token . '";';
+
+      // Prepare statement
+      $stmt = $this->conn->prepare($query);
+
+      // Execute query
+      if($stmt->execute()){
+        $following = $stmt->fetch(PDO::FETCH_ASSOC);
+        $following = $following['following'];
+
+        $following = $following . '.' . $iduser;
+
+        // Create query
+        $query = 'UPDATE ' . $this->table . ' SET ' . 'following="' . $following . '" WHERE token="' . $this->token . '";';
+
+        // Prepare statement
+        $stmt = $this->conn->prepare($query);
+
+        // Execute query
+        if($stmt->execute()){
+          return json_encode(['iduser' => $iduser]);
+        }      
+        // Print error if something goes wrong
+        printf("Error: %s.\n", $stmt->error);
+      }      
+      // Print error if something goes wrong
+      printf("Error: %s.\n", $stmt->error);
+
+      return false;
+    }
+
 
     
   }

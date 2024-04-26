@@ -605,14 +605,107 @@
 
 
 
-
-        "/api/users/current/uploadAvatar" : {
+        "/api/users/follow.php" : {
             "post" : {
-                "tags": ["default"],
-                "description": "name file : avatar",
+                "tags": ["Target"],
+                "description": "Follow User",
+                "parameters": [
+                    {
+                        "name" : "Authorization",
+                        "in": "header"
+                    }
+                ],
                 "requestBody" : {
                     "content": {
-                        "image/png" : {}
+                        "multipart/form-data" : {
+                            "schema" : {
+                                "type": "object",
+                                "properties": {
+                                    "iduser" : {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200" : {
+                        "description": "Succes follow user",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "iduser" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Validation error",
+                                        "value" : {
+                                            "erros" : {
+                                                "iduser" : [
+                                                    "The iduser field is required"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401" : {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Unauthorized",
+                                        "value" : {
+                                            "erros" : {
+                                                "message" : [
+                                                    "unauthorized"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405" : {
+                        "description": "Method Not Allowed",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Method Not Allowed",
+                                        "value" : {
+                                            "erros" : {
+                                                "message" : [
+                                                    "Method Not Allowed"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
