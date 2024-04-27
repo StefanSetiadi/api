@@ -114,6 +114,33 @@
       }
     }
 
+    // Get Current User
+    public function getcurrent() {
+      $query = 'SELECT * FROM users WHERE token = :token';
+      $stmt = $this->conn->prepare($query);
+      $stmt->bindParam(':token', $this->token);
+      if($stmt->execute()) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); 
+        return json_encode(
+          array('data' => array (
+            'id' => $result['id'],
+            'username' => $result['username'],
+            'email' => $result['email'],
+            'name' => $result['name'],
+            'bio' => $result['bio'],
+            'avatar' => $result['avatar'],
+            'verified' => $result['verified'],
+            'countpost' => $result['countpost'],
+            'countarticle' => $result['countarticle'],
+            'following' => $result['following'],
+            'followers' => $result['followers']
+          ))
+        );
+      } else {
+        printf("Error: %s.\n", $stmt->error);
+      }
+    }
+
     // Update profile
     public function update() {
       $setUpdate = '';
@@ -153,36 +180,121 @@
     // Follow User
     public function follow($iduser) {
       // Create query
-      $query = 'SELECT * FROM USERS WHERE token= ' . '"' .$this->token . '";';
+      $query1 = 'INSERT INTO follow (user_id, follower_id) VALUES (' . $iduser . ', (SELECT id FROM users WHERE token = "'. $this->token . '"));';
+      $query2 = 'UPDATE users SET following = following + 1 WHERE token = "' . $this->token . '";';
+      $query3 = 'UPDATE users SET followers = followers + 1 WHERE id = ' . $iduser . ';';
 
       // Prepare statement
-      $stmt = $this->conn->prepare($query);
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+      $stmt3 = $this->conn->prepare($query3);
 
       // Execute query
-      if($stmt->execute()){
-        $following = $stmt->fetch(PDO::FETCH_ASSOC);
-        $following = $following['following'];
-
-        $following = $following . '.' . $iduser;
-
-        // Create query
-        $query = 'UPDATE ' . $this->table . ' SET ' . 'following="' . $following . '" WHERE token="' . $this->token . '";';
-
-        // Prepare statement
-        $stmt = $this->conn->prepare($query);
-
-        // Execute query
-        if($stmt->execute()){
-          return json_encode(['iduser' => $iduser]);
-        }      
-        // Print error if something goes wrong
-        printf("Error: %s.\n", $stmt->error);
+      if($stmt1->execute() && $stmt2->execute() && $stmt3->execute()){        
+        return json_encode(
+        array('data' => array (
+            'iduser' => $iduser
+        ))
+        );
       }      
       // Print error if something goes wrong
-      printf("Error: %s.\n", $stmt->error);
+      printf("Error: Error database system");
 
       return false;
     }
+
+    // Follow User
+    public function unfollow($iduser) {
+      // Create query
+      $query1 = 'DELETE FROM follow WHERE user_id =' . $iduser . ' AND follower_id = (SELECT id FROM users WHERE token = "'. $this->token . '");';
+      $query2 = 'UPDATE users SET following = following-1 WHERE token = "' . $this->token . '";';
+      $query3 = 'UPDATE users SET followers = followers-1 WHERE id = ' . $iduser . ';';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+      $stmt3 = $this->conn->prepare($query3);
+
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute() && $stmt3->execute()){        
+        return json_encode(
+        array('data' => array (
+            'iduser' => $iduser
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
+
+    // Follow User
+    public function deletefollower($iduser) {
+      // Create query
+      $query1 = 'DELETE FROM follow WHERE user_id =(SELECT id FROM users WHERE token = "'. $this->token . '") AND follower_id = ' . $iduser . ';';
+      $query2 = 'UPDATE users SET following = following-1 WHERE id = ' . $iduser . ';';
+      $query3 = 'UPDATE users SET followers = followers-1 WHERE token = "' . $this->token . '";';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+      $stmt3 = $this->conn->prepare($query3);
+
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute() && $stmt3->execute()){        
+        return json_encode(
+        array('data' => array (
+            'iduser' => $iduser
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
+
+    // Get Following User
+    public function getfollowing(){
+      $query = 'SELECT * FROM users WHERE id IN (
+        SELECT user_id 
+        FROM follow 
+        WHERE follower_id = (SELECT id FROM users WHERE token = :token)
+      )';
+      $stmt = $this->conn->prepare($query);
+      
+      $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
+      
+      if ($stmt->execute()) {
+          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          
+          return json_encode(array('data' => $result));
+      } else {
+          printf("Error: %s.\n", $stmt->error);
+      }  
+    }
+
+    // Get Followers User
+    public function getfollowers(){
+      $query = 'SELECT * FROM users WHERE id IN (
+        SELECT follower_id 
+        FROM follow 
+        WHERE user_id = (SELECT id FROM users WHERE token = :token)
+      )';
+      $stmt = $this->conn->prepare($query);
+      
+      $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
+      
+      if ($stmt->execute()) {
+          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          
+          return json_encode(array('data' => $result));
+      } else {
+          printf("Error: %s.\n", $stmt->error);
+      }  
+    }
+
 
 
     

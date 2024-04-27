@@ -45,16 +45,16 @@
                 $result = $stmt->rowCount();
 
                 if ($result > 0) {
+                    $unfollow = $user->unfollow($data->iduser);
+                    http_response_code(200);
+                    echo $unfollow;
+                } else {
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'user has followed'
+                        'message' => 'user not followed'
                     ))
                     );
-                } else {
-                    $follow = $user->follow($data->iduser);
-                    http_response_code(200);
-                    echo $follow;
                 }
             }
             

@@ -30,9 +30,9 @@
         exit();
       }
 
-      $current = $user->getcurrent();
+      $following = $user->getfollowing();
       http_response_code(200);
-      echo $current;
+      echo $following;
 
     } else {
       http_response_code(401);

@@ -35,26 +35,23 @@
 
         if (isset($data->iduser)){
             // Check if the user has followed 
-            // $query = 'SELECT * FROM follow WHERE user_id = :user_id AND follower_id = (SELECT id FROM USERS WHERE token=":token");';
-            $query = 'SELECT * FROM follow WHERE user_id=' . $data->iduser .' AND follower_id = (SELECT id FROM USERS WHERE token="' . $user->token . '");';
+            $query = 'SELECT * FROM follow WHERE follower_id=' . $data->iduser .' AND user_id = (SELECT id FROM USERS WHERE token="' . $user->token . '");';
             $stmt = $user->conn->prepare($query);
-            // $stmt->bindParam(':user_id', $data->iduser);
-            // $stmt->bindParam(':token', $user->token);
 
             if($stmt->execute()) {
                 $result = $stmt->rowCount();
 
                 if ($result > 0) {
+                    $deletefollower = $user->deletefollower($data->iduser);
+                    http_response_code(200);
+                    echo $deletefollower;
+                } else {
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'user has followed'
+                        'message' => 'follower not found'
                     ))
                     );
-                } else {
-                    $follow = $user->follow($data->iduser);
-                    http_response_code(200);
-                    echo $follow;
                 }
             }
             
