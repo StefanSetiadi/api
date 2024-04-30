@@ -2,7 +2,7 @@
   // Headers
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
-  header('Access-Control-Allow-Methods: DELETE');
+  header('Access-Control-Allow-Methods: POST');
   header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
   include_once '../../config/Database.php';
@@ -10,7 +10,7 @@
 
   $method = $_SERVER['REQUEST_METHOD'];
 
-  if($method == 'DELETE'){
+  if($method == 'POST'){
     // Instantiate DB & connect
     $database = new Database();
     $db = $database->connect();
@@ -30,16 +30,20 @@
         exit();
       }
 
-      $query = 'UPDATE users SET token=NULL WHERE token = :token';
-      $stmt = $user->conn->prepare($query);
-      $stmt->bindParam(':token', $x_authorization);
-      if($stmt->execute()) {
+      // Get raw posted data
+      $data = json_decode(file_get_contents("php://input"));
+
+      if (isset($data->search)){
+        $following = $user->search($data->search);
         http_response_code(200);
-        echo json_encode(
-          array('data' => true)
-        );
+        echo $following;
       } else {
-        printf("Error: %s.\n", $stmt->error);
+        http_response_code(400);
+        $errors = [];
+        if (!isset($data->search)) {
+            $errors['search'][] = 'The search field is required';
+        }
+        echo json_encode(['errors' => $errors]);
       }
 
     } else {

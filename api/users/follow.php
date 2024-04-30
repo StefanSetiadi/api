@@ -34,27 +34,39 @@
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->iduser)){
-            // Check if the user has followed 
-            // $query = 'SELECT * FROM follow WHERE user_id = :user_id AND follower_id = (SELECT id FROM USERS WHERE token=":token");';
-            $query = 'SELECT * FROM follow WHERE user_id=' . $data->iduser .' AND follower_id = (SELECT id FROM USERS WHERE token="' . $user->token . '");';
-            $stmt = $user->conn->prepare($query);
-            // $stmt->bindParam(':user_id', $data->iduser);
-            // $stmt->bindParam(':token', $user->token);
-
-            if($stmt->execute()) {
-                $result = $stmt->rowCount();
-
-                if ($result > 0) {
+            // Check id user
+            $query_id = 'SELECT * FROM users WHERE id=' . $data->iduser . ';';
+            $stmt_id = $user->conn->prepare($query_id);
+            if($stmt_id->execute()) {
+                $result_id = $stmt_id->rowCount();
+                if($result_id == 0) {
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'user has followed'
+                        'message' => 'user not found'
                     ))
                     );
                 } else {
-                    $follow = $user->follow($data->iduser);
-                    http_response_code(200);
-                    echo $follow;
+                    // Check if the user has followed 
+                    $query = 'SELECT * FROM follow WHERE user_id=' . $data->iduser .' AND follower_id = (SELECT id FROM USERS WHERE token="' . $user->token . '");';
+                    $stmt = $user->conn->prepare($query);
+
+                    if($stmt->execute()) {
+                        $result = $stmt->rowCount();
+
+                        if ($result > 0) {
+                            http_response_code(400);
+                            echo json_encode(
+                            array('errors' => array (
+                                'message' => 'user has followed'
+                            ))
+                            );
+                        } else {
+                            $follow = $user->follow($data->iduser);
+                            http_response_code(200);
+                            echo $follow;
+                        }
+                    }
                 }
             }
             

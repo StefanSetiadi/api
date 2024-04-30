@@ -203,7 +203,7 @@
       return false;
     }
 
-    // Follow User
+    // Unfollow User
     public function unfollow($iduser) {
       // Create query
       $query1 = 'DELETE FROM follow WHERE user_id =' . $iduser . ' AND follower_id = (SELECT id FROM users WHERE token = "'. $this->token . '");';
@@ -229,7 +229,7 @@
       return false;
     }
 
-    // Follow User
+    // Delete Follower
     public function deletefollower($iduser) {
       // Create query
       $query1 = 'DELETE FROM follow WHERE user_id =(SELECT id FROM users WHERE token = "'. $this->token . '") AND follower_id = ' . $iduser . ';';
@@ -285,6 +285,27 @@
       $stmt = $this->conn->prepare($query);
       
       $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
+      
+      if ($stmt->execute()) {
+          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          
+          return json_encode(array('data' => $result));
+      } else {
+          printf("Error: %s.\n", $stmt->error);
+      }  
+    }
+
+    // Search User
+    public function search($search){
+      $search = "%" . $search . "%";
+      $query = 'SELECT * FROM users WHERE id IN (
+        SELECT id
+        FROM users
+        WHERE LOWER(name) LIKE :search OR LOWER(username) LIKE :search
+      )';
+      $stmt = $this->conn->prepare($query);
+      
+      $stmt->bindParam(':search', $search, PDO::PARAM_STR);
       
       if ($stmt->execute()) {
           $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
