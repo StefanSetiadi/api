@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2024 at 07:22 AM
+-- Generation Time: May 01, 2024 at 04:55 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -148,11 +148,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `name`, `email`, `bio`, `avatar`, `verified`, `countpost`, `countarticle`, `following`, `followers`, `token`, `created_at`, `updated_at`) VALUES
-(1, 'satu', 'satu', 'satu', 'satu@example.com', 'satu', NULL, 0, 0, 0, 0, 0, 'satu', '2024-04-27 05:19:07', '2024-04-27 05:19:07'),
-(2, 'dua', 'dua', 'dua', 'dua@example.com', 'dua', NULL, 0, 0, 0, 0, 0, 'dua', '2024-04-27 05:21:25', '2024-04-27 05:21:25'),
-(3, 'tiga', 'tiga', 'tiga', 'tiga@example.com', 'tiga', NULL, 0, 0, 0, 0, 0, 'tiga', '2024-04-27 05:21:25', '2024-04-27 05:21:25'),
+(1, 'satu', 'satu', 'satu', 'satu@example.com', 'satu', NULL, 0, 0, 0, 0, 0, 'satu', '2024-04-27 05:19:07', '2024-04-30 11:41:35'),
+(2, 'dua', 'dua', 'dua', 'dua@example.com', 'dua', NULL, 0, 0, 0, 0, 0, 'dua', '2024-04-27 05:21:25', '2024-04-27 12:01:43'),
+(3, 'tiga', 'tiga', 'tiga', 'tiga@example.com', 'tiga', NULL, 0, 0, 0, 0, 0, 'tiga', '2024-04-27 05:21:25', '2024-04-27 12:10:04'),
 (4, 'empat', 'empat', 'empat', 'empat@example.com', 'empat', NULL, 0, 0, 0, 0, 0, 'empat', '2024-04-27 05:21:25', '2024-04-27 05:21:25'),
-(5, 'lima', 'lima', 'lima', 'lima@example.com', 'lima', NULL, 0, 0, 0, 0, 0, 'lima', '2024-04-27 05:21:25', '2024-04-27 05:21:25');
+(5, 'lima', 'lima', 'lima', 'lima@example.com', 'lima', NULL, 0, 0, 0, 0, 0, 'lima', '2024-04-27 05:21:25', '2024-04-27 05:21:25'),
+(6, 'Username', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'Update Nama', 'email@example.com', 'Ini adalah Bio saya', 'http://localhost/api/api/users/avatar/OIP.png', 0, 0, 0, 0, 0, '0aa5800b70fedb160a827cc2c7433a4d5c8005a4759132eb2f04dfc28b412aae', '2024-04-30 11:19:58', '2024-04-30 11:41:35');
 
 --
 -- Indexes for dumped tables
@@ -235,7 +236,7 @@ ALTER TABLE `commentpost`
 -- AUTO_INCREMENT for table `follow`
 --
 ALTER TABLE `follow`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -253,7 +254,7 @@ ALTER TABLE `story`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
