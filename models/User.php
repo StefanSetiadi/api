@@ -316,6 +316,20 @@
       }  
     }
 
+    // Get Random User
+    public function getrandom(){
+      $query = 'SELECT * FROM users ORDER BY RAND() LIMIT 10;';
+      $stmt = $this->conn->prepare($query);
+      
+      if ($stmt->execute()) {
+          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          
+          return json_encode(array('data' => $result));
+      } else {
+          printf("Error: %s.\n", $stmt->error);
+      }  
+    }
+
 
 
     

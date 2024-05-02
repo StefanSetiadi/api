@@ -176,6 +176,30 @@
 
       return false;
     }
+
+    // Create Comment Post
+    public function createcomment($token,$idpost,$comment) {
+      // Create query
+      $query1 = 'INSERT INTO commentpost SET  post_id ="' . $idpost . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '"), comment="' . $comment .'";';
+      $query2 = 'UPDATE post SET countcomment = countcomment+1 WHERE id = ' . $idpost . ';';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute()){        
+        return json_encode(
+        array('data' => array (
+            'idpost' => $idpost
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
   
 
 

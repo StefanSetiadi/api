@@ -916,6 +916,58 @@
                 }
             }
         },
+        "/api/users/random-users.php" : {
+            "get" : {
+                "tags": ["Success"],
+                "description": "Get random users",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200" : {
+                        "description": "List Users",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "array",
+                                            "items" : {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id" : {
+                                                        "type": "number"
+                                                    },
+                                                    "username" : {
+                                                        "type": "string"
+                                                    },
+                                                    "bio" : {
+                                                        "type": "string"
+                                                    },
+                                                    "countpost" : {
+                                                        "type": "number"
+                                                    },
+                                                    "countarticles" : {
+                                                        "type": "number"
+                                                    },
+                                                    "verified" : {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/search.php" : {
             "post" : {
                 "tags": ["Success"],
