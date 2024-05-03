@@ -83,6 +83,24 @@
       }
     }
 
+    // Authentication user comment post
+    public function Auth_Check_Comment($token, $idcomment) {
+      $query = 'SELECT * FROM commentpost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :comment_id';
+      $stmt = $this->conn->prepare($query);
+      $token = htmlspecialchars(strip_tags($token));
+      $idcomment = htmlspecialchars(strip_tags($idcomment));
+      $stmt->bindParam(':token', $token);
+      $stmt->bindParam(':comment_id', $idcomment);
+      $stmt->execute();
+      $result = $stmt->rowCount();
+
+      if ($result > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     // Update Post
     public function update($id) {
       // Clean data
@@ -186,12 +204,37 @@
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);
       $stmt2 = $this->conn->prepare($query2);
-
+      
       // Execute query
       if($stmt1->execute() && $stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'idpost' => $idpost
+            'idpost' => $idpost,
+            'comment' => $comment
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
+
+    // Delete comment Post
+    public function deletecomment($idcomment) {
+      // Create query
+      $query1 = 'UPDATE post SET countcomment = countcomment-1 WHERE id=(SELECT post_id FROM commentpost WHERE  id ="' . $idcomment . '");';
+      $query2 = 'DELETE FROM commentpost WHERE id ="' . $idcomment . '";';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute()){    
+        return json_encode(
+        array('data' => array (
+            'idcomment' => $idcomment
         ))
         );
       }      

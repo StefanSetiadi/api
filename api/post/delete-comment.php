@@ -2,26 +2,36 @@
   // Headers
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
-  header('Access-Control-Allow-Methods: POST');
+  header('Access-Control-Allow-Methods: DELETE');
   header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
   include_once '../../models/Post.php';
 
+
   $method = $_SERVER['REQUEST_METHOD'];
 
-  if($method == 'POST'){  
+  if($method == 'DELETE'){  
     // Instantiate DB & connect
     $database = new Database();
     $db = $database->connect();
 
     // Get X-Authorization from HTTP header
     if(isset($_SERVER['HTTP_X_AUTHORIZATION'])){
+        // Get raw posted data
+        $data = json_decode(file_get_contents("php://input"));
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
-        $user = new User($db);
-        $user->token = $x_authorization;
-        if(!$user->Auth_Check()){
+        $post = new Post($db);
+
+        if (!isset($data->idcomment)) {
+            http_response_code(400);
+            $errors = [];
+            $errors['idcomment'][] = 'The idcomment field is required';
+            echo json_encode(['errors' => $errors]);
+            exit();
+        }
+        if(!$post->Auth_Check_Comment($x_authorization, $data->idcomment)){
             http_response_code(401);
             echo json_encode(
             array('errors' => array (
@@ -31,26 +41,16 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
+        if (isset($data->idcomment)){
+            $deletecomment = $post->deletecomment($data->idcomment, $x_authorization);
+            http_response_code(200);
+            echo $deletecomment;
 
-        if (isset($_POST['caption']) && isset($_FILES['image'])){
-            $post = new Post($db);
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $post->urlimage = $database->domain_name() . '/api/post/image/' . $name_image;
-
-
-            $post->caption = isset($_POST['caption']) ? $_POST['caption'] : NULL;
-            $create = $post->create($user->token);
-            echo $create;
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($_POST['caption']) || !isset($_FILES['image'])) {
-                $errors['message'][] = 'Use caption and image photo fields to create your post';
+            if (!isset($data->idcomment)) {
+                $errors['idcomment'][] = 'The idcomment field is required';
             }
             echo json_encode(['errors' => $errors]);
         }
