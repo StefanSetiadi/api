@@ -101,6 +101,24 @@
       }
     }
 
+    // Authentication user like post
+    public function Auth_Check_Like($token, $idlike) {
+      $query = 'SELECT * FROM likepost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :idlike';
+      $stmt = $this->conn->prepare($query);
+      $token = htmlspecialchars(strip_tags($token));
+      $idlike = htmlspecialchars(strip_tags($idlike));
+      $stmt->bindParam(':token', $token);
+      $stmt->bindParam(':idlike', $idlike);
+      $stmt->execute();
+      $result = $stmt->rowCount();
+
+      if ($result > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     // Update Post
     public function update($id) {
       // Clean data
@@ -243,7 +261,54 @@
 
       return false;
     }
-  
+    
+    // Create Like Post
+    public function like($token,$idpost) {
+      // Create query
+      $query1 = 'INSERT INTO likepost SET  post_id ="' . $idpost . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '");';
+      $query2 = 'UPDATE post SET countlike = countlike+1 WHERE id = ' . $idpost . ';';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+      
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute()){        
+        return json_encode(
+        array('data' => array (
+            'idpost' => $idpost
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
+
+    // Delete like Post
+    public function deletelike($idlike) {
+      // Create query
+      $query1 = 'UPDATE post SET countlike = countlike-1 WHERE id=(SELECT post_id FROM likepost WHERE  id ="' . $idlike . '");';
+      $query2 = 'DELETE FROM likepost WHERE id ="' . $idlike . '";';
+
+      // Prepare statement
+      $stmt1 = $this->conn->prepare($query1);
+      $stmt2 = $this->conn->prepare($query2);
+
+      // Execute query
+      if($stmt1->execute() && $stmt2->execute()){    
+        return json_encode(
+        array('data' => array (
+            'idlike' => $idlike
+        ))
+        );
+      }      
+      // Print error if something goes wrong
+      printf("Error: Error database system");
+
+      return false;
+    }
 
 
 
