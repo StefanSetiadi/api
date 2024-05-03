@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2024 at 12:38 PM
+-- Generation Time: May 03, 2024 at 09:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,6 +52,7 @@ CREATE TABLE `article` (
 CREATE TABLE `commentarticle` (
   `id` int(11) NOT NULL,
   `article_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `comment` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -66,6 +67,7 @@ CREATE TABLE `commentarticle` (
 CREATE TABLE `commentpost` (
   `id` int(11) NOT NULL,
   `post_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `comment` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -90,7 +92,7 @@ CREATE TABLE `follow` (
 --
 
 CREATE TABLE `likearticle` (
-  `id` int(11) NOT NULL DEFAULT 0,
+  `id` int(11) NOT NULL,
   `article_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -104,7 +106,7 @@ CREATE TABLE `likearticle` (
 --
 
 CREATE TABLE `likepost` (
-  `id` int(11) NOT NULL DEFAULT 0,
+  `id` int(11) NOT NULL,
   `post_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -199,14 +201,16 @@ ALTER TABLE `article`
 --
 ALTER TABLE `commentarticle`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `article_id` (`article_id`);
+  ADD KEY `idx_article_id` (`article_id`),
+  ADD KEY `idx_user_id` (`user_id`);
 
 --
 -- Indexes for table `commentpost`
 --
 ALTER TABLE `commentpost`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `post_id` (`post_id`);
+  ADD KEY `idx_post_id` (`post_id`),
+  ADD KEY `idx_user_id` (`user_id`);
 
 --
 -- Indexes for table `follow`
@@ -220,15 +224,17 @@ ALTER TABLE `follow`
 -- Indexes for table `likearticle`
 --
 ALTER TABLE `likearticle`
-  ADD KEY `fk_article_user` (`user_id`),
-  ADD KEY `fk_article_id` (`article_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_article_id` (`article_id`),
+  ADD KEY `idx_user_id` (`user_id`);
 
 --
 -- Indexes for table `likepost`
 --
 ALTER TABLE `likepost`
-  ADD KEY `fk_post_user` (`user_id`),
-  ADD KEY `fk_post_id` (`post_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_post_id` (`post_id`),
+  ADD KEY `idx_user_id` (`user_id`);
 
 --
 -- Indexes for table `post`
@@ -281,6 +287,18 @@ ALTER TABLE `follow`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `likearticle`
+--
+ALTER TABLE `likearticle`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `likepost`
+--
+ALTER TABLE `likepost`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `post`
 --
 ALTER TABLE `post`
@@ -312,13 +330,15 @@ ALTER TABLE `article`
 -- Constraints for table `commentarticle`
 --
 ALTER TABLE `commentarticle`
-  ADD CONSTRAINT `commentarticle_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`);
+  ADD CONSTRAINT `fk_comment_article` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
+  ADD CONSTRAINT `fk_comment_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `commentpost`
 --
 ALTER TABLE `commentpost`
-  ADD CONSTRAINT `commentpost_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`);
+  ADD CONSTRAINT `fk_post_article` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
+  ADD CONSTRAINT `fk_post_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `follow`
@@ -331,15 +351,15 @@ ALTER TABLE `follow`
 -- Constraints for table `likearticle`
 --
 ALTER TABLE `likearticle`
-  ADD CONSTRAINT `fk_article_id` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
-  ADD CONSTRAINT `fk_article_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_likearticle_id` FOREIGN KEY (`article_id`) REFERENCES `post` (`id`),
+  ADD CONSTRAINT `fk_likearticle_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `likepost`
 --
 ALTER TABLE `likepost`
-  ADD CONSTRAINT `fk_post_id` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
-  ADD CONSTRAINT `fk_post_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_liekpost_id` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
+  ADD CONSTRAINT `fk_likepost_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `post`

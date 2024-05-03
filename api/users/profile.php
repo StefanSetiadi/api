@@ -39,7 +39,7 @@
                 $name_avatar = $_FILES['avatar']['name'];
         
                 move_uploaded_file($avatar_tmp, 'avatar/'.$name_avatar);
-                $user->avatar = 'http://localhost/api/api/users/avatar/' . $name_avatar;
+                $user->avatar = $database->domain_name() . '/api/users/avatar/' . $name_avatar;
             } else {
                 $user->avatar = NULL;
             }

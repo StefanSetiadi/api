@@ -6,6 +6,7 @@
     private $username = 'root';
     private $password = '';
     private $conn;
+    private $domain_name = "https://localhost/api";
 
     // DB Connect
     public function connect() {
@@ -20,4 +21,10 @@
 
       return $this->conn;
     }
+
+    public function domain_name() {
+      return $this->domain_name;
+    }
+
+  
   }

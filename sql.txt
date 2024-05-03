@@ -1,0 +1,12 @@
+CREATE TABLE `likearticle` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `article_id` INT(11),
+  `user_id` INT(11),
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_article_id` (`article_id`),
+  INDEX `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_likearticle_id` FOREIGN KEY (`article_id`) REFERENCES `post` (`id`),
+  CONSTRAINT `fk_likearticle_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+);

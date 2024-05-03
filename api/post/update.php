@@ -48,7 +48,7 @@
             $name_image = $_FILES['image']['name'];
     
             move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $post->urlimage = 'http://localhost/api/api/post/image/' . $name_image;
+            $post->urlimage = $database->domain_name() . '/api/post/image/' . $name_image;
 
 
             $post->caption = isset($_POST['caption']) ? $_POST['caption'] : NULL;
