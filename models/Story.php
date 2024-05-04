@@ -59,14 +59,14 @@
       return false;
     }
 
-    // Authentication user post
+    // Authentication user story
     public function Auth_Check_Story($token) {
-      $query = 'SELECT * FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :post_id';
+      $query = 'SELECT * FROM story WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :story_id';
       $stmt = $this->conn->prepare($query);
       $token = htmlspecialchars(strip_tags($token));
       $this->id = htmlspecialchars(strip_tags($this->id));
       $stmt->bindParam(':token', $token);
-      $stmt->bindParam(':post_id', $this->id);
+      $stmt->bindParam(':story_id', $this->id);
       $stmt->execute();
       $result = $stmt->rowCount();
 
@@ -145,23 +145,22 @@
       }  
     }
 
-    // Delete Post
-    public function deletepost($idpost) {
+    // Delete Story
+    public function deletestory($idstory) {
       // Create query
-      $query1 = 'DELETE FROM commentpost WHERE post_id ="' . $idpost . '";';
-      $query2 = 'DELETE FROM post WHERE id ="' . $idpost . '";';
-      // $query3 = 'UPDATE users SET followers = followers-1 WHERE token = "' . $this->token . '";';
+      // $query1 = 'DELETE FROM commentpost WHERE post_id ="' . $idstory . '";';
+      $query2 = 'DELETE FROM story WHERE id ="' . $idstory . '";';
 
       // Prepare statement
-      $stmt1 = $this->conn->prepare($query1);
+      // $stmt1 = $this->conn->prepare($query1);
       $stmt2 = $this->conn->prepare($query2);
       // $stmt3 = $this->conn->prepare($query3);
 
       // Execute query
-      if($stmt1->execute() && $stmt2->execute()){        
+      if($stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'idpost' => $idpost
+            'idstory' => $idstory
         ))
         );
       }      

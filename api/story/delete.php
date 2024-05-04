@@ -33,7 +33,7 @@
         }
 
         $story->id = isset($data->idstory) ? $data->idstory : NULL;
-        if(!$story->Auth_Check($x_authorization)){
+        if(!$story->Auth_Check_Story($x_authorization)){
             http_response_code(401);
             echo json_encode(
             array('errors' => array (
