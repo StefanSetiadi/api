@@ -35,28 +35,44 @@
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->id)){
-            $post = new Post($db);
-            // check if user has like post
-            $query = 'SELECT * FROM likepost WHERE post_id = :post_id AND user_id = (SELECT id FROM users WHERE token = :token);';
-            $data->id = htmlspecialchars(strip_tags($data->id));
-            $user->token = htmlspecialchars(strip_tags($user->token));
-            $stmt = $user->conn->prepare($query);
-            $stmt->bindParam(':post_id', $data->id);
-            $stmt->bindParam(':token', $user->token);
-            if($stmt->execute()) {
-                $result = $stmt->rowCount();
-      
-                if ($result > 0) {
+            // Check id post
+            $query_id = 'SELECT * FROM post WHERE id=' . $data->id . ';';
+            $stmt_id = $user->conn->prepare($query_id);
+            if($stmt_id->execute()) {
+                $result_id = $stmt_id->rowCount();
+                if($result_id == 0) {
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'user has like post'
+                        'message' => 'post not found'
                     ))
                     );
-                } else{
-                    $like = $post->like($user->token, $data->id);
-                    echo $like;
-                }
+                } else {
+                    $post = new Post($db);
+                    // check if user has like post
+                    $query = 'SELECT * FROM likepost WHERE post_id = :post_id AND user_id = (SELECT id FROM users WHERE token = :token);';
+                    $data->id = htmlspecialchars(strip_tags($data->id));
+                    $user->token = htmlspecialchars(strip_tags($user->token));
+                    $stmt = $user->conn->prepare($query);
+                    $stmt->bindParam(':post_id', $data->id);
+                    $stmt->bindParam(':token', $user->token);
+                    if($stmt->execute()) {
+                        $result = $stmt->rowCount();
+              
+                        if ($result > 0) {
+                            http_response_code(400);
+                            echo json_encode(
+                            array('errors' => array (
+                                'message' => 'user has like post'
+                            ))
+                            );
+                        } else{
+                            $like = $post->like($user->token, $data->id);
+                            echo $like;
+                        }
+                }   
+            }
+            
             }
         } else {
             http_response_code(400);

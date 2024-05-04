@@ -220,7 +220,66 @@
                                 "schema" : {
                                     "type": "object",
                                     "properties": {
-                                        "data" : {
+                                        "post" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "user_id" : {
+                                                    "type": "number"
+                                                },
+                                                "caption" : {
+                                                    "type": "string"
+                                                },
+                                                "countlike" : {
+                                                    "type": "number"
+                                                },
+                                                "countcomment" : {
+                                                    "type": "number"
+                                                },
+                                                "urlimage" : {
+                                                    "type": "string"
+                                                },
+                                                "created_at" : {
+                                                    "type": "string"
+                                                }
+                                                ,
+                                                "updated_at" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "like" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                },
+                                                "user_id" : {
+                                                    "type": "number"
+                                                },
+                                                "caption" : {
+                                                    "type": "string"
+                                                },
+                                                "countlike" : {
+                                                    "type": "number"
+                                                },
+                                                "countcomment" : {
+                                                    "type": "number"
+                                                },
+                                                "urlimage" : {
+                                                    "type": "string"
+                                                },
+                                                "created_at" : {
+                                                    "type": "string"
+                                                }
+                                                ,
+                                                "updated_at" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },"comment" : {
                                             "type": "object",
                                             "properties": {
                                                 "id" : {

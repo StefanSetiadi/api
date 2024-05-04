@@ -172,16 +172,43 @@
       return false;
     }
 
-    public function getpost($token){
-      $query = 'SELECT * FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token)';
-      $stmt = $this->conn->prepare($query);
+    public function current($token){
+      $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token)';
+      $stmt_total = $this->conn->prepare($query_total);
+      $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
+      $data = [];
+      if($stmt_total->execute()){
+        $result_total = $stmt_total->fetchAll(PDO::FETCH_ASSOC);
+        $index = 0;
+        foreach ($result_total as $item) {
+          $index++;
+          $query1 = 'SELECT * FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :id';
+          $query2 = 'SELECT * FROM likepost WHERE post_id = :id';
+          $query3 = 'SELECT * FROM commentpost WHERE post_id = :id';
+          $stmt1 = $this->conn->prepare($query1);
+          $stmt2 = $this->conn->prepare($query2);
+          $stmt3 = $this->conn->prepare($query3);
+          $stmt1->bindParam(':token', $token, PDO::PARAM_STR);
+          $stmt1->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          $stmt2->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          $stmt3->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          if ($stmt1->execute() &&$stmt2->execute() && $stmt3->execute()) {
+            $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+            $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+            
+          }
+        }
+        return json_encode(array('data' => $data));
+
+      }
       
-      $stmt->bindParam(':token', $token, PDO::PARAM_STR);
-      
-      if ($stmt->execute()) {
-          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($stmt2->execute() && $stmt3->execute()) {
+          $result1 = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+          $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+          $result3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
           
-          return json_encode(array('data' => $result));
+          return json_encode(array('data' => $result1,'comment' => $result2, 'like' =>$result3));
       } else {
           printf("Error: %s.\n", $stmt->error);
       }  

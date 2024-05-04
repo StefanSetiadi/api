@@ -35,9 +35,24 @@
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->id) && isset($data->comment)){
-            $post = new Post($db);
-            $comment = $post->createcomment($user->token, $data->id, $data->comment);
-            echo $comment;
+            // Check id post
+            $query_id = 'SELECT * FROM post WHERE id=' . $data->id . ';';
+            $stmt_id = $user->conn->prepare($query_id);
+            if($stmt_id->execute()) {
+                $result_id = $stmt_id->rowCount();
+                if($result_id == 0) {
+                    http_response_code(400);
+                    echo json_encode(
+                    array('errors' => array (
+                        'message' => 'post not found'
+                    ))
+                    );
+                } else {
+                    $post = new Post($db);
+                    $comment = $post->createcomment($user->token, $data->id, $data->comment);
+                    echo $comment;
+                }
+            }
         } else {
             http_response_code(400);
             $errors = [];

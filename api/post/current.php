@@ -31,7 +31,7 @@
         exit();
       }
       $post = new Post($db);
-      $post = $post->getpost($user->token);
+      $post = $post->current($user->token);
       http_response_code(200);
       echo $post;
 
