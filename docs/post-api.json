@@ -13,7 +13,7 @@
     "paths": {
         "/api/post/create.php" : {
             "post" : {
-                "tags": ["target"],
+                "tags": ["Success"],
                 "description": "Create new post",
                 "requestBody" : {
                     "content": {
@@ -47,20 +47,11 @@
                                         "description": "Validation error",
                                         "value" : {
                                             "erros" : {
-                                                "username" : [
-                                                    "The username field is required"
+                                                "image" : [
+                                                    "The image photo field is required"
                                                 ],
-                                                "email" : [
-                                                    "The username field is required"
-                                                ],
-                                                "password" : [
-                                                    "The username field is required"
-                                                ],
-                                                "name" : [
-                                                    "The username field is required"
-                                                ],
-                                                "message" : [
-                                                    "username or email already registered"
+                                                "caption" : [
+                                                    "The caption field is required"
                                                 ]
                                             }
                                         }
@@ -69,23 +60,10 @@
                             }
                         }
                     },
-                    "201" : {
-                        "description": "Succes register user",
+                    "200" : {
+                        "description": "Succes create post",
                         "content": {
                             "application/json" : {
-                                "examples": {
-                                    "default" : {
-                                        "description": "default register user",
-                                        "value" : {
-                                            "data" : {
-                                                "id" : 1,
-                                                "name" : "Daniel Antonio Ramirez",
-                                                "username" : "Antonio",
-                                                "email" : "daniel.antonioramirez@example.com"
-                                            }
-                                        }
-                                    }
-                                },
                                 "schema" : {
                                     "type": "object",
                                     "properties": {
@@ -95,20 +73,29 @@
                                                 "id" : {
                                                     "type": "number"
                                                 },
-                                                "username" : {
+                                                "user_id" : {
+                                                    "type": "number"
+                                                },
+                                                "caption" : {
                                                     "type": "string"
                                                 },
-                                                "name" : {
+                                                "countlike" : {
+                                                    "type": "number"
+                                                },
+                                                "countcomment" : {
+                                                    "type": "number"
+                                                },
+                                                "urlimage" : {
+                                                    "type": "string"
+                                                },
+                                                "created_at" : {
                                                     "type": "string"
                                                 }
                                                 ,
-                                                "email" : {
+                                                "updated_at" : {
                                                     "type": "string"
                                                 }
                                             }
-                                        },
-                                        "errors" : {
-                                            "type": "object"
                                         }
                                     }
                                 }
@@ -120,45 +107,58 @@
         },
         "/api/post/update.php" : {
             "post" : {
-                "tags": ["target"],
-                "description": "Login user",
+                "tags": ["Success"],
+                "description": "Update post",
                 "requestBody" : {
                     "content": {
-                        "application/json" : {
-                            "examples": {
-                                "Using a Username" : {
-                                    "description": "Sign in using Username",
-                                    "value" : {
-                                        "username" : "Antonio",
-                                        "password" : "secret"
-                                    }
-                                }
-                            },
+                        "multipart/form-data" : {
                             "schema" : {
                                 "type": "object",
+                                "required": [
+                                    "id", "image","caption"
+                                ],
                                 "properties": {
-                                    "username" : {
-                                        "description": "If you log in using your username",
-                                        "type": "string",
-                                        "nullable": true
+                                    "id" : {
+                                        "type": "number"
                                     },
-                                    "email" : {
-                                        "description": "If you log in using your email",
+                                    "image" : {
                                         "type": "string",
-                                        "nullable": true
+                                        "format": "binary",
+                                        "description": "Upload Image"
                                     },
-                                    "password" : {
-                                        "type": "string",
-                                        "nullable": false
-                                    }
+                                    "caption" : {
+                                        "type": "string"
+                                    }     
                                 }
                             }
                         }
                     }
                 },
                 "responses": {
-                    "201" : {
-                        "description": "default login",
+                    "400" : {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Validation error",
+                                        "value" : {
+                                            "erros" : {
+                                                "id" : [
+                                                    "The id field is required"
+                                                ],
+                                                "message" : [
+                                                    "Use caption and image photo fields to create your post"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200" : {
+                        "description": "Succes update post",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -170,16 +170,26 @@
                                                 "id" : {
                                                     "type": "number"
                                                 },
-                                                "username" : {
+                                                "user_id" : {
+                                                    "type": "number"
+                                                },
+                                                "caption" : {
                                                     "type": "string"
                                                 },
-                                                "email" : {
+                                                "countlike" : {
+                                                    "type": "number"
+                                                },
+                                                "countcomment" : {
+                                                    "type": "number"
+                                                },
+                                                "urlimage" : {
                                                     "type": "string"
                                                 },
-                                                "name" : {
+                                                "created_at" : {
                                                     "type": "string"
-                                                },
-                                                "token" : {
+                                                }
+                                                ,
+                                                "updated_at" : {
                                                     "type": "string"
                                                 }
                                             }
@@ -192,10 +202,10 @@
                 }
             }
         },
-        "/api/post/read.php" : {
+        "/api/post/current.php" : {
             "get" : {
-                "tags": ["target"],
-                "description": "Get current user",
+                "tags": ["Success"],
+                "description": "Get all posts created by a user",
                 "parameters": [
                     {
                         "name" : "Authorization",
@@ -204,7 +214,7 @@
                 ],
                 "responses": {
                     "200" : {
-                        "description": "default get current user",
+                        "description": "Get all posts created by a user",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -216,35 +226,27 @@
                                                 "id" : {
                                                     "type": "number"
                                                 },
-                                                "username" : {
+                                                "user_id" : {
+                                                    "type": "number"
+                                                },
+                                                "caption" : {
                                                     "type": "string"
                                                 },
-                                                "email" : {
+                                                "countlike" : {
+                                                    "type": "number"
+                                                },
+                                                "countcomment" : {
+                                                    "type": "number"
+                                                },
+                                                "urlimage" : {
                                                     "type": "string"
                                                 },
-                                                "name" : {
+                                                "created_at" : {
                                                     "type": "string"
-                                                },
-                                                "bio" : {
+                                                }
+                                                ,
+                                                "updated_at" : {
                                                     "type": "string"
-                                                },
-                                                "avatar" : {
-                                                    "type": "string"
-                                                },
-                                                "verified" : {
-                                                    "type": "integer"
-                                                },
-                                                "countpost" : {
-                                                    "type": "integer"
-                                                },
-                                                "countarticle" : {
-                                                    "type": "integer"
-                                                },
-                                                "following" : {
-                                                    "type": "integer"
-                                                },
-                                                "followers" : {
-                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -256,6 +258,73 @@
                 }
             }
         },
+        "/api/post/delete.php" : {
+            "delete" : {
+                "tags": ["Success"],
+                "description": "Delete post",
+                "requestBody" : {
+                    "content": {
+                        "multipart/form-data" : {
+                            "schema" : {
+                                "type": "object",
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id" : {
+                                        "type": "number"
+                                    }     
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400" : {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json" : {
+                                "examples": {
+                                    "validationerror" : {
+                                        "description": "Validation error",
+                                        "value" : {
+                                            "erros" : {
+                                                "id" : [
+                                                    "The id field is required"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200" : {
+                        "description": "Succes delete post",
+                        "content": {
+                            "application/json" : {
+                                "schema" : {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "id" : {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+
         "/api/post/search.php?={id}" : {
             "get" : {
                 "tags": ["default"],

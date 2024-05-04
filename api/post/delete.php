@@ -24,15 +24,15 @@
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
         $post = new Post($db);
 
-        if (!isset($data->idpost)) {
+        if (!isset($data->id)) {
             http_response_code(400);
             $errors = [];
-            $errors['idpost'][] = 'The idpost field is required';
+            $errors['id'][] = 'The id field is required';
             echo json_encode(['errors' => $errors]);
             exit();
         }
 
-        $post->id = isset($data->idpost) ? $data->idpost : NULL;
+        $post->id = isset($data->id) ? $data->id : NULL;
         if(!$post->Auth_Check($x_authorization)){
             http_response_code(401);
             echo json_encode(
@@ -43,16 +43,16 @@
             exit();
         }
 
-        if (isset($data->idpost)){
-            $deletepost = $post->deletepost($data->idpost);
+        if (isset($data->id)){
+            $deletepost = $post->deletepost($data->id);
             http_response_code(200);
             echo $deletepost;
 
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($data->idpost)) {
-                $errors['idpost'][] = 'The idpost field is required';
+            if (!isset($data->id)) {
+                $errors['id'][] = 'The id field is required';
             }
             echo json_encode(['errors' => $errors]);
         }

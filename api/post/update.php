@@ -24,7 +24,7 @@
         if (!isset($_POST['id'])) {
             http_response_code(400);
             $errors = [];
-            $errors['idpost'][] = 'The idpost field is required';
+            $errors['id'][] = 'The id field is required';
             echo json_encode(['errors' => $errors]);
             exit();
         }
