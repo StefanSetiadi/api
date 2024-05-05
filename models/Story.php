@@ -77,26 +77,17 @@
       }
     }
 
-    // Update Post
+    // Update Story
     public function update($id) {
       // Clean data
       $id = htmlspecialchars(strip_tags($id));
-      $this->caption = htmlspecialchars(strip_tags($this->caption));
       $this->urlimage = htmlspecialchars(strip_tags($this->urlimage));
 
       // Update query
-      $query = "UPDATE post SET caption='" . $this->caption . "', urlimage='" . $this->urlimage ."' WHERE id='" . $id ."';";
+      $query = "UPDATE story SET urlimage='" . $this->urlimage ."' WHERE id='" . $id ."';";
 
       // Prepare statement
       $stmt = $this->conn->prepare($query);
-
-      // if($stmt->execute()){
-      //   return json_encode(
-      //     array('message' => array (
-      //       'testing' => 'Ini bisa masuk',
-      //       'query' => $stmt->queryString
-      //     ))
-      //   );
 
       if($stmt->execute()){
         // Read data
@@ -108,10 +99,8 @@
             array('data' => array (
               'id' => $result['id'],
               'user_id' => $result['user_id'],
-              'caption' => $result['caption'],
               'urlimage' => $result['urlimage'],
-              'countlike' => $result['countlike'],
-              'countcomment' => $result['countcomment'],
+              'countview' => $result['countview'],
               'created_at' => $result['created_at'],
               'updated_at' => $result['updated_at']
             ))
@@ -146,10 +135,10 @@
     }
 
     // Delete Story
-    public function deletestory($idstory) {
+    public function deletestory($id) {
       // Create query
-      // $query1 = 'DELETE FROM commentpost WHERE post_id ="' . $idstory . '";';
-      $query2 = 'DELETE FROM story WHERE id ="' . $idstory . '";';
+      // $query1 = 'DELETE FROM commentpost WHERE post_id ="' . $id . '";';
+      $query2 = 'DELETE FROM story WHERE id ="' . $id . '";';
 
       // Prepare statement
       // $stmt1 = $this->conn->prepare($query1);
@@ -160,7 +149,7 @@
       if($stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'idstory' => $idstory
+            'id' => $id
         ))
         );
       }      

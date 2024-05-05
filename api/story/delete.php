@@ -24,15 +24,15 @@
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
         $story = new Story($db);
 
-        if (!isset($data->idstory)) {
+        if (!isset($data->id)) {
             http_response_code(400);
             $errors = [];
-            $errors['idstory'][] = 'The idstory field is required';
+            $errors['message'][] = 'The id field is required';
             echo json_encode(['errors' => $errors]);
             exit();
         }
 
-        $story->id = isset($data->idstory) ? $data->idstory : NULL;
+        $story->id = isset($data->id) ? $data->id : NULL;
         if(!$story->Auth_Check_Story($x_authorization)){
             http_response_code(401);
             echo json_encode(
@@ -43,16 +43,16 @@
             exit();
         }
 
-        if (isset($data->idstory)){
-            $deletestory = $story->deletestory($data->idstory);
+        if (isset($data->id)){
+            $deletestory = $story->deletestory($data->id);
             http_response_code(200);
             echo $deletestory;
 
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($data->idstory)) {
-                $errors['idstory'][] = 'The idstory field is required';
+            if (!isset($data->id)) {
+                $errors['message'][] = 'The id field is required';
             }
             echo json_encode(['errors' => $errors]);
         }

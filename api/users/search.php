@@ -41,7 +41,7 @@
         http_response_code(400);
         $errors = [];
         if (!isset($data->search)) {
-            $errors['search'][] = 'The search field is required';
+            $errors['message'][] = 'The search field is required';
         }
         echo json_encode(['errors' => $errors]);
       }
