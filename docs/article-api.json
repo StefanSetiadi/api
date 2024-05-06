@@ -1,8 +1,8 @@
 {
     "openapi" : "3.0.3",
     "info": {
-        "title": "Post API",
-        "description": "Post API",
+        "title": "Article API",
+        "description": "Article API",
         "version": "1.0.0"
     },
     "servers": [
@@ -11,26 +11,35 @@
         }
     ],
     "paths": {
-        "/api/post/create.php" : {
+        "/api/article/create.php" : {
             "post" : {
-                "tags": ["Success"],
-                "description": "Create new post",
+                "tags": ["Target"],
+                "description": "Create new article",
                 "requestBody" : {
                     "content": {
                         "multipart/form-data" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
-                                    "image","caption"
+                                    "title","content","image"
                                 ],
                                 "properties": {
+                                    "title" : {
+                                        "type": "string"
+                                    },
+                                    "subtitle" : {
+                                        "type": "string"
+                                    },
+                                    "content" : {
+                                        "type": "string"
+                                    },
+                                    "category" : {
+                                        "type": "string"
+                                    },
                                     "image" : {
                                         "type": "string",
                                         "format": "binary",
                                         "description": "Upload Image"
-                                    },
-                                    "caption" : {
-                                        "type": "string"
                                     }     
                                 }
                             }
@@ -39,7 +48,7 @@
                 },
                 "responses": {
                     "200" : {
-                        "description": "Succes create post",
+                        "description": "Succes create article",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -54,7 +63,19 @@
                                                 "user_id" : {
                                                     "type": "number"
                                                 },
-                                                "caption" : {
+                                                "title" : {
+                                                    "type": "string"
+                                                },
+                                                "subtitle" : {
+                                                    "type": "string"
+                                                },
+                                                "content" : {
+                                                    "type": "string"
+                                                },
+                                                "category" : {
+                                                    "type": "string"
+                                                },
+                                                "urlimage" : {
                                                     "type": "string"
                                                 },
                                                 "countlike" : {
@@ -62,9 +83,6 @@
                                                 },
                                                 "countcomment" : {
                                                     "type": "number"
-                                                },
-                                                "urlimage" : {
-                                                    "type": "string"
                                                 },
                                                 "created_at" : {
                                                     "type": "string"
@@ -89,11 +107,14 @@
                                         "description": "Validation error",
                                         "value" : {
                                             "erros" : {
+                                                "title" : [
+                                                    "The title field is required"
+                                                ],
+                                                "content" : [
+                                                    "The content field is required"
+                                                ],
                                                 "image" : [
                                                     "The image photo field is required"
-                                                ],
-                                                "caption" : [
-                                                    "The caption field is required"
                                                 ]
                                             }
                                         }
@@ -143,29 +164,35 @@
                 }
             }
         },
-        "/api/post/update.php" : {
+        "/api/article/update.php" : {
             "post" : {
-                "tags": ["Success"],
-                "description": "Update post",
+                "tags": ["Target"],
+                "description": "Update article",
                 "requestBody" : {
                     "content": {
                         "multipart/form-data" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
-                                    "id", "image","caption"
+                                    "title","content","image"
                                 ],
                                 "properties": {
-                                    "id" : {
-                                        "type": "number"
+                                    "title" : {
+                                        "type": "string"
+                                    },
+                                    "subtitle" : {
+                                        "type": "string"
+                                    },
+                                    "content" : {
+                                        "type": "string"
+                                    },
+                                    "category" : {
+                                        "type": "string"
                                     },
                                     "image" : {
                                         "type": "string",
                                         "format": "binary",
                                         "description": "Upload Image"
-                                    },
-                                    "caption" : {
-                                        "type": "string"
                                     }     
                                 }
                             }
@@ -278,9 +305,9 @@
                 }
             }
         },
-        "/api/post/current.php" : {
+        "/api/article/current.php" : {
             "get" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Get all posts created by a user",
                 "parameters": [
                     {
@@ -431,9 +458,9 @@
                 }
             }
         },
-        "/api/post/delete.php" : {
+        "/api/article/delete.php" : {
             "delete" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Delete post",
                 "parameters": [
                     {
@@ -443,7 +470,7 @@
                 ],
                 "requestBody" : {
                     "content": {
-                        "application/json" : {
+                        "multipart/form-data" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
@@ -541,9 +568,9 @@
         },
 
 
-        "/api/post/comment.php" : {
+        "/api/article/comment.php" : {
             "post" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Comment for a single post",
                 "parameters": [
                     {
@@ -655,9 +682,9 @@
                 }
             }
         },
-        "/api/post/delete-comment.php" : {
+        "/api/article/delete-comment.php" : {
             "delete" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Delete Comment",
                 "parameters": [
                     {
@@ -767,9 +794,9 @@
                 }
             }
         },
-        "/api/post/like.php" : {
+        "/api/article/like.php" : {
             "post" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Like post",
                 "parameters": [
                     {
@@ -878,9 +905,9 @@
                 }
             }
         },
-        "/api/post/delete-like.php" : {
+        "/api/article/delete-like.php" : {
             "delete" : {
-                "tags": ["Success"],
+                "tags": ["Target"],
                 "description": "Delete like post",
                 "parameters": [
                     {
