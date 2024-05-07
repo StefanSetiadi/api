@@ -228,7 +228,7 @@
                                                     "The id field is required"
                                                 ],
                                                 "message" : [
-                                                    "Use caption and image photo fields to create your post"
+                                                    "Use caption and image photo fields to update your post"
                                                 ]
                                             }
                                         }

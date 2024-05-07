@@ -31,19 +31,13 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
+        // Get raw posted data
+        $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($_POST['caption']) && isset($_FILES['image'])){
+        if (isset($data->caption) && isset($data->image)){
             $post = new Post($db);
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $post->urlimage = $database->domain_name() . '/api/post/image/' . $name_image;
-
-
-            $post->caption = isset($_POST['caption']) ? $_POST['caption'] : NULL;
+            $post->urlimage = isset($data->image) ? $data->image : NULL;
+            $post->caption = isset($data->caption) ? $data->caption : NULL;
             $create = $post->create($user->token);
             echo $create;
         } else {
