@@ -1,4 +1,6 @@
 <?php 
+  include_once '../../config/Database.php';
+
   class User {
     // DB stuff
     public $conn;
@@ -13,6 +15,7 @@
     public $token;
     public $bio;
     public $avatar;
+
 
     // Constructor with DB
     public function __construct($db) {
@@ -156,14 +159,26 @@
         $arrayUpdate['bio'][] = $this->bio;
       }
       if($this->avatar != NULL){
+        // create random name
+        $timestamp = time();
+        $raw_token = $this->avatar . '|' . $timestamp;
+        $random = hash_hmac('sha256', $raw_token, '3bacd2366b2a95d35b52dea21c35e1de47bc986c9da79da4f6666d7f5ea1ba38');
+
         $this->avatar = htmlspecialchars(strip_tags($this->avatar));
+        $extfoto = 'png';
+        $foto = base64_decode($this->avatar);
+        file_put_contents('avatar/'.$random.'.'.$extfoto, $foto);
+        // membuat nama foto
+        $database = new Database();
+        $this->avatar = $database->domain_name() . '/api/users/avatar/' .$random.'.'.$extfoto;
         $setUpdate = $setUpdate . 'avatar="' . $this->avatar .'", ';
         $arrayUpdate['avatar'][] = $this->avatar;
       }
       $setUpdate = rtrim($setUpdate, " \t\n\r\0\x0B,");
       // Create query
-      $query = 'UPDATE ' . $this->table . ' SET ' . $setUpdate . ' WHERE token="' . $this->token . '";';
-
+      $query = "UPDATE " . $this->table . " SET " . $setUpdate . " WHERE token='" . $this->token . "';";
+      // $query = "UPDATE {$this->table} SET {$setUpdate} WHERE token={$this->token};";
+      
       // Prepare statement
       $stmt = $this->conn->prepare($query);
 

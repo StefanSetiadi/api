@@ -384,7 +384,7 @@
                 ],
                 "requestBody" : {
                     "content": {
-                        "multipart/form-data" : {
+                        "application/json" : {
                             "schema" : {
                                 "type": "object",
                                 "properties": {
@@ -396,7 +396,7 @@
                                     },
                                     "avatar" : {
                                         "type": "string",
-                                        "format": "binary",
+                                        "format": "byte",
                                         "description": "Upload Image"
                                     }
                                 }
