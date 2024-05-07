@@ -333,7 +333,7 @@
 
     // Get Random User
     public function getrandom(){
-      $query = 'SELECT * FROM users ORDER BY RAND() LIMIT 10;';
+      $query = 'SELECT * FROM users WHERE NOT token="' . $this->token . '" ORDER BY RAND() LIMIT 10;';
       $stmt = $this->conn->prepare($query);
       
       if ($stmt->execute()) {

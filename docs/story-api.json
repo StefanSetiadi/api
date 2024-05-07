@@ -17,7 +17,7 @@
                 "description": "Create new post",
                 "requestBody" : {
                     "content": {
-                        "multipart/form-data" : {
+                        "application/json" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
@@ -26,7 +26,7 @@
                                 "properties": {
                                     "image" : {
                                         "type": "string",
-                                        "format": "binary",
+                                        "format": "byte",
                                         "description": "Upload Image"
                                     }  
                                 }
@@ -136,7 +136,7 @@
                 "description": "Update story",
                 "requestBody" : {
                     "content": {
-                        "multipart/form-data" : {
+                        "application/json" : {
                             "schema" : {
                                 "type": "object",
                                 "required": [
@@ -148,7 +148,7 @@
                                     },
                                     "image" : {
                                         "type": "string",
-                                        "format": "binary",
+                                        "format": "byte",
                                         "description": "Upload Image"
                                     }   
                                 }
@@ -195,7 +195,7 @@
                     "400" : {
                         "description": "Validation error",
                         "content": {
-                            "multipart/form-data" : {
+                            "application/json" : {
                                 "examples": {
                                     "validationerror" : {
                                         "description": "Validation error",
