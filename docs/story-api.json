@@ -13,7 +13,7 @@
     "paths": {
         "/api/story/create.php" : {
             "post" : {
-                "tags": ["Target"],
+                "tags": ["Success"],
                 "description": "Create new post",
                 "requestBody" : {
                     "content": {
@@ -132,7 +132,7 @@
         },
         "/api/story/update.php" : {
             "post" : {
-                "tags": ["Target"],
+                "tags": ["Success"],
                 "description": "Update story",
                 "requestBody" : {
                     "content": {
@@ -254,7 +254,7 @@
         },
         "/api/story/current.php" : {
             "get" : {
-                "tags": ["Target"],
+                "tags": ["Success"],
                 "description": "Get all story created by a user",
                 "parameters": [
                     {
@@ -342,7 +342,7 @@
         },
         "/api/story/delete.php" : {
             "delete" : {
-                "tags": ["Target"],
+                "tags": ["Success"],
                 "description": "Delete post",
                 "parameters": [
                     {
