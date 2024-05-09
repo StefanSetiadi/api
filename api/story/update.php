@@ -16,12 +16,15 @@
     $database = new Database();
     $db = $database->connect();
 
+    // Get raw posted data
+    $data = json_decode(file_get_contents("php://input"));
+
     // Get X-Authorization from HTTP header
     if(isset($_SERVER['HTTP_X_AUTHORIZATION'])){
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
         $story = new Story($db);
 
-        if (!isset($_POST['id']) && !isset($_FILES['image'])) {
+        if (!isset($data->id) && !isset($data->image)) {
             http_response_code(400);
             $errors = [];
             $errors['message'][] = 'The id and image photo field is required';
@@ -29,7 +32,7 @@
             exit();
         }
 
-        $story->id = isset($_POST['id']) ? $_POST['id'] : NULL;
+        $story->id = isset($data->id) ? $data->id : NULL;
         if(!$story->Auth_Check_Story($x_authorization)){
             http_response_code(401);
             echo json_encode(
@@ -40,18 +43,9 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
-
-        if (isset($_POST['id']) && isset($_FILES['image'])){
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $story->urlimage = $database->domain_name() . '/api/story/image/' . $name_image;
-
-
-            $story->id = isset($_POST['id']) ? $_POST['id'] : NULL;
+        if (isset($data->id) && isset($data->image)){
+            $story->id = isset($data->id) ? $data->id : NULL;
+            $story->urlimage = isset($data->image) ? $data->image : NULL;
             $update = $story->update($story->id);
             echo $update;
         } else {

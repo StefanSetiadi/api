@@ -18,6 +18,11 @@
 
     // Create Story
     public function create($token) {
+      // create random name
+      $timestamp = time();
+      $raw_token = $token . '|' . $timestamp;
+      $random = hash_hmac('sha256', $raw_token, '3bacd2366b2a95d35b52dea21c35e1de47bc986c9da79da4f6666d7f5ea1ba38');
+        
       // Create query
       $query = 'INSERT INTO ' . $this->table . ' SET user_id = (SELECT id FROM users WHERE token = :token), urlimage = :urlimage';
 
@@ -27,6 +32,15 @@
       // Clean data
       $token = htmlspecialchars(strip_tags($token));
       $this->urlimage = htmlspecialchars(strip_tags($this->urlimage));
+      $extfoto = 'png';
+
+      // mengubah base64 menjadi foto
+      $foto = base64_decode($this->urlimage);
+      file_put_contents('image/'.$random.'.'.$extfoto, $foto);
+      // membuat nama foto
+      $database = new Database();
+      $this->urlimage = $database->domain_name() . '/api/story/image/' .$random.'.'.$extfoto;
+
 
       // Bind data
       $stmt->bindParam(':token', $token);
@@ -79,15 +93,30 @@
 
     // Update Story
     public function update($id) {
+      // create random name
+      $timestamp = time();
+      $raw_token = $id . '|' . $timestamp;
+      $random = hash_hmac('sha256', $raw_token, '3bacd2366b2a95d35b52dea21c35e1de47bc986c9da79da4f6666d7f5ea1ba38');
+        
       // Clean data
       $id = htmlspecialchars(strip_tags($id));
       $this->urlimage = htmlspecialchars(strip_tags($this->urlimage));
+      $extfoto = 'png';
+
+      // mengubah base64 menjadi foto
+      $foto = base64_decode($this->urlimage);
+      file_put_contents('image/'.$random.'.'.$extfoto, $foto);
+      // membuat nama foto
+      $database = new Database();
+      $this->urlimage = $database->domain_name() . '/api/story/image/' .$random.'.'.$extfoto;
+
 
       // Update query
       $query = "UPDATE story SET urlimage='" . $this->urlimage ."' WHERE id='" . $id ."';";
 
       // Prepare statement
       $stmt = $this->conn->prepare($query);
+
 
       if($stmt->execute()){
         // Read data

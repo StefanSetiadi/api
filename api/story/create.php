@@ -31,22 +31,18 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
+        // Get raw posted data
+        $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($_FILES['image'])){
+        if (isset($data->image)){
             $story = new Story($db);
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $story->urlimage = $database->domain_name() . '/api/story/image/' . $name_image;
+            $story->urlimage = isset($data->image) ? $data->image : NULL;
             $create = $story->create($user->token);
             echo $create;
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($_FILES['image'])) {
+            if (!isset($data->image)) {
                 $errors['message'][] = 'Use image photo fields to create your post';
             }
             echo json_encode(['errors' => $errors]);

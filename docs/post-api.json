@@ -557,12 +557,15 @@
                             "schema" : {
                                 "type": "object",
                                 "required": [
-                                    "id"
+                                    "id", "comment"
                                 ],
                                 "properties": {
                                     "id" : {
                                         "type": "number"
-                                    }     
+                                    },
+                                    "comment" : {
+                                        "type": "string"
+                                    }  
                                 }
                             }
                         }
