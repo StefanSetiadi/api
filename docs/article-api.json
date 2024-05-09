@@ -13,7 +13,7 @@
     "paths": {
         "/api/article/create.php" : {
             "post" : {
-                "tags": ["Target"],
+                "tags": ["Success"],
                 "description": "Create new article",
                 "requestBody" : {
                     "content": {
@@ -201,7 +201,7 @@
                 },
                 "responses": {
                     "200" : {
-                        "description": "Succes update post",
+                        "description": "Succes update article",
                         "content": {
                             "application/json" : {
                                 "schema" : {
@@ -255,7 +255,7 @@
                                                     "The id field is required"
                                                 ],
                                                 "message" : [
-                                                    "Use caption and image photo fields to create your post"
+                                                    "Use title, subtitle, content, category or image photo fields to update your article"
                                                 ]
                                             }
                                         }

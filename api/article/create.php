@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
 
@@ -31,26 +31,23 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
+        // Get raw posted data
+        $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($_POST['caption']) && isset($_FILES['image'])){
-            $post = new Post($db);
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $post->urlimage = $database->domain_name() . '/api/post/image/' . $name_image;
-
-
-            $post->caption = isset($_POST['caption']) ? $_POST['caption'] : NULL;
-            $create = $post->create($user->token);
+        if (isset($data->title) && isset($data->content) && isset($data->image)){
+            $article = new Article($db);
+            $article->title = isset($data->title) ? $data->title : NULL;
+            $article->subtitle = isset($data->subtitle) ? $data->subtitle : NULL;
+            $article->content = isset($data->content) ? $data->content : NULL;
+            $article->category = isset($data->category) ? $data->category : NULL;
+            $article->urlimage = isset($data->image) ? $data->image : NULL;
+            $create = $article->create($user->token);
             echo $create;
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($_POST['caption']) || !isset($_FILES['image'])) {
-                $errors['message'][] = 'Use caption and image photo fields to create your post';
+            if (!isset($data->title) || !isset($data->content) || !isset($data->image)) {
+                $errors['message'][] = 'Use title, content, and image photo fields to create your article';
             }
             echo json_encode(['errors' => $errors]);
         }

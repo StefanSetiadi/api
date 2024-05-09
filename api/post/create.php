@@ -43,7 +43,7 @@
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($_POST['caption']) || !isset($_FILES['image'])) {
+            if (!isset($data->caption) || !isset($data->image)) {
                 $errors['message'][] = 'Use caption and image photo fields to create your post';
             }
             echo json_encode(['errors' => $errors]);

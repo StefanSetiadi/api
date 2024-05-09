@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
 
@@ -16,12 +16,15 @@
     $database = new Database();
     $db = $database->connect();
 
+    // Get raw posted data
+    $data = json_decode(file_get_contents("php://input"));
+
     // Get X-Authorization from HTTP header
     if(isset($_SERVER['HTTP_X_AUTHORIZATION'])){
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
-        $post = new Post($db);
+        $article = new Article($db);
 
-        if (!isset($_POST['id'])) {
+        if (!isset($data->id)) {
             http_response_code(400);
             $errors = [];
             $errors['id'][] = 'The id field is required';
@@ -29,8 +32,8 @@
             exit();
         }
 
-        $post->id = isset($_POST['id']) ? $_POST['id'] : NULL;
-        if(!$post->Auth_Check($x_authorization)){
+        $article->id = isset($data->id) ? $data->id : NULL;
+        if(!$article->Auth_Check($x_authorization)){
             http_response_code(401);
             echo json_encode(
             array('errors' => array (
@@ -40,26 +43,20 @@
             exit();
         }
 
-        // // Get raw posted data
-        // $data = json_decode(file_get_contents("php://input"));
-
-        if (isset($_POST['caption']) && isset($_FILES['image'] )){
-            $image_tmp = $_FILES['image']['tmp_name'];
-            $name_image = $_FILES['image']['name'];
-    
-            move_uploaded_file($image_tmp, 'image/'.$name_image);
-            $post->urlimage = $database->domain_name() . '/api/post/image/' . $name_image;
-
-
-            $post->caption = isset($_POST['caption']) ? $_POST['caption'] : NULL;
-            $post->id = isset($_POST['id']) ? $_POST['id'] : NULL;
-            $update = $post->update($post->id);
+        if (isset($data->title) || isset($data->subtitle) || isset($data->content) || isset($data->category) || isset($data->image)){
+            $article = new Article($db);
+            $article->title = isset($data->title) ? $data->title : NULL;
+            $article->subtitle = isset($data->subtitle) ? $data->subtitle : NULL;
+            $article->content = isset($data->content) ? $data->content : NULL;
+            $article->category = isset($data->category) ? $data->category : NULL;
+            $article->urlimage = isset($data->image) ? $data->image : NULL;
+            $update = $article->update($data->id);
             echo $update;
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($data->name) || !isset($data->bio) || !isset($data->image)) {
-                $errors['message'][] = 'Use caption and image photo fields to create your post';
+            if (!isset($data->title) && !isset($data->subtitle) && !isset($data->content) && !isset($data->category) && !isset($data->image)) {
+                $errors['message'][] = 'Use title, subtitle, content, category or image photo fields to update your article';
             }
             echo json_encode(['errors' => $errors]);
         }
