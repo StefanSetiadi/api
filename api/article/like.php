@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
 
@@ -35,8 +35,8 @@
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->id)){
-            // Check id post
-            $query_id = 'SELECT * FROM post WHERE id=' . $data->id . ';';
+            // Check id article
+            $query_id = 'SELECT * FROM article WHERE id=' . $data->id . ';';
             $stmt_id = $user->conn->prepare($query_id);
             if($stmt_id->execute()) {
                 $result_id = $stmt_id->rowCount();
@@ -44,17 +44,17 @@
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'post not found'
+                        'message' => 'article not found'
                     ))
                     );
                 } else {
-                    $post = new Post($db);
-                    // check if user has like post
-                    $query = 'SELECT * FROM likepost WHERE post_id = :post_id AND user_id = (SELECT id FROM users WHERE token = :token);';
+                    $article = new Article($db);
+                    // check if user has like article
+                    $query = 'SELECT * FROM likearticle WHERE article_id = :article_id AND user_id = (SELECT id FROM users WHERE token = :token);';
                     $data->id = htmlspecialchars(strip_tags($data->id));
                     $user->token = htmlspecialchars(strip_tags($user->token));
                     $stmt = $user->conn->prepare($query);
-                    $stmt->bindParam(':post_id', $data->id);
+                    $stmt->bindParam(':article_id', $data->id);
                     $stmt->bindParam(':token', $user->token);
                     if($stmt->execute()) {
                         $result = $stmt->rowCount();
@@ -63,11 +63,11 @@
                             http_response_code(400);
                             echo json_encode(
                             array('errors' => array (
-                                'message' => 'user has like post'
+                                'message' => 'user has like article'
                             ))
                             );
                         } else{
-                            $like = $post->like($user->token, $data->id);
+                            $like = $article->like($user->token, $data->id);
                             echo $like;
                         }
                 }   

@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
 
@@ -30,10 +30,10 @@
         );
         exit();
       }
-      $post = new Post($db);
-      $post = $post->current($user->token);
+      $article = new Article($db);
+      $article = $article->current($user->token);
       http_response_code(200);
-      echo $post;
+      echo $article;
 
     } else {
       http_response_code(401);

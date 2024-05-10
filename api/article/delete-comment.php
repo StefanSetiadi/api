@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
 
   $method = $_SERVER['REQUEST_METHOD'];
@@ -22,7 +22,7 @@
         // Get raw posted data
         $data = json_decode(file_get_contents("php://input"));
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
-        $post = new Post($db);
+        $article = new Article($db);
 
         if (!isset($data->idcomment)) {
             http_response_code(400);
@@ -31,7 +31,7 @@
             echo json_encode(['errors' => $errors]);
             exit();
         }
-        if(!$post->Auth_Check_Comment($x_authorization, $data->idcomment)){
+        if(!$article->Auth_Check_Comment($x_authorization, $data->idcomment)){
             http_response_code(401);
             echo json_encode(
             array('errors' => array (
@@ -42,7 +42,7 @@
         }
 
         if (isset($data->idcomment)){
-            $deletecomment = $post->deletecomment($data->idcomment, $x_authorization);
+            $deletecomment = $article->deletecomment($data->idcomment, $x_authorization);
             http_response_code(200);
             echo $deletecomment;
 

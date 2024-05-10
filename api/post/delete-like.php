@@ -42,9 +42,9 @@
         }
 
         if (isset($data->idlike)){
-            $deletecomment = $post->deletelike($data->idlike, $x_authorization);
+            $deletelike = $post->deletelike($data->idlike, $x_authorization);
             http_response_code(200);
-            echo $deletecomment;
+            echo $deletelike;
 
         } else {
             http_response_code(400);

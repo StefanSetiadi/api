@@ -7,7 +7,7 @@
 
   include_once '../../config/Database.php';
   include_once '../../models/User.php';
-  include_once '../../models/Post.php';
+  include_once '../../models/Article.php';
 
   $method = $_SERVER['REQUEST_METHOD'];
 
@@ -35,8 +35,8 @@
         $data = json_decode(file_get_contents("php://input"));
 
         if (isset($data->id) && isset($data->comment)){
-            // Check id post
-            $query_id = 'SELECT * FROM post WHERE id=' . $data->id . ';';
+            // Check id article
+            $query_id = 'SELECT * FROM article WHERE id=' . $data->id . ';';
             $stmt_id = $user->conn->prepare($query_id);
             if($stmt_id->execute()) {
                 $result_id = $stmt_id->rowCount();
@@ -44,12 +44,12 @@
                     http_response_code(400);
                     echo json_encode(
                     array('errors' => array (
-                        'message' => 'post not found'
+                        'message' => 'article not found'
                     ))
                     );
                 } else {
-                    $post = new Post($db);
-                    $comment = $post->createcomment($user->token, $data->id, $data->comment);
+                    $article = new Article($db);
+                    $comment = $article->createcomment($user->token, $data->id, $data->comment);
                     echo $comment;
                 }
             }

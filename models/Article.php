@@ -127,7 +127,7 @@
 
     // Authentication user comment post
     public function Auth_Check_Comment($token, $idcomment) {
-      $query = 'SELECT * FROM commentpost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :comment_id';
+      $query = 'SELECT * FROM commentarticle WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :comment_id';
       $stmt = $this->conn->prepare($query);
       $token = htmlspecialchars(strip_tags($token));
       $idcomment = htmlspecialchars(strip_tags($idcomment));
@@ -143,9 +143,9 @@
       }
     }
 
-    // Authentication user like post
+    // Authentication user like article
     public function Auth_Check_Like($token, $idlike) {
-      $query = 'SELECT * FROM likepost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :idlike';
+      $query = 'SELECT * FROM likearticle WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :idlike';
       $stmt = $this->conn->prepare($query);
       $token = htmlspecialchars(strip_tags($token));
       $idlike = htmlspecialchars(strip_tags($idlike));
@@ -246,7 +246,7 @@
     }
 
     public function current($token){
-      $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token)';
+      $query_total = 'SELECT id FROM article WHERE user_id=(SELECT id FROM users WHERE token = :token)';
       $stmt_total = $this->conn->prepare($query_total);
       $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
       $data = [];
@@ -255,9 +255,9 @@
         $index = 0;
         foreach ($result_total as $item) {
           $index++;
-          $query1 = 'SELECT * FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :id';
-          $query2 = 'SELECT * FROM likepost WHERE post_id = :id';
-          $query3 = 'SELECT * FROM commentpost WHERE post_id = :id';
+          $query1 = 'SELECT * FROM article WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :id';
+          $query2 = 'SELECT * FROM likearticle WHERE article_id = :id';
+          $query3 = 'SELECT * FROM commentarticle WHERE article_id = :id';
           $stmt1 = $this->conn->prepare($query1);
           $stmt2 = $this->conn->prepare($query2);
           $stmt3 = $this->conn->prepare($query3);
@@ -266,7 +266,7 @@
           $stmt2->bindParam(':id', $item['id'], PDO::PARAM_STR);
           $stmt3->bindParam(':id', $item['id'], PDO::PARAM_STR);
           if ($stmt1->execute() &&$stmt2->execute() && $stmt3->execute()) {
-            $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+            $data[$index]['article'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
             $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
             
@@ -287,11 +287,11 @@
       }  
     }
 
-    // Delete Post
-    public function deletepost($idpost) {
+    // Delete Article
+    public function deletearticle($idarticle) {
       // Create query
-      $query1 = 'DELETE FROM commentpost WHERE post_id ="' . $idpost . '";';
-      $query2 = 'DELETE FROM post WHERE id ="' . $idpost . '";';
+      $query1 = 'DELETE FROM commentarticle WHERE article_id ="' . $idarticle . '";';
+      $query2 = 'DELETE FROM article WHERE id ="' . $idarticle . '";';
       // $query3 = 'UPDATE users SET followers = followers-1 WHERE token = "' . $this->token . '";';
 
       // Prepare statement
@@ -303,7 +303,7 @@
       if($stmt1->execute() && $stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'idpost' => $idpost
+            'id' => $idarticle
         ))
         );
       }      
@@ -313,11 +313,11 @@
       return false;
     }
 
-    // Create Comment Post
-    public function createcomment($token,$idpost,$comment) {
+    // Create Comment Article
+    public function createcomment($token,$idarticle,$comment) {
       // Create query
-      $query1 = 'INSERT INTO commentpost SET  post_id ="' . $idpost . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '"), comment="' . $comment .'";';
-      $query2 = 'UPDATE post SET countcomment = countcomment+1 WHERE id = ' . $idpost . ';';
+      $query1 = 'INSERT INTO commentarticle SET  article_id ="' . $idarticle . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '"), comment="' . $comment .'";';
+      $query2 = 'UPDATE article SET countcomment = countcomment+1 WHERE id = ' . $idarticle . ';';
 
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);
@@ -327,7 +327,7 @@
       if($stmt1->execute() && $stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'id' => $idpost,
+            'id' => $idarticle,
             'comment' => $comment
         ))
         );
@@ -338,11 +338,11 @@
       return false;
     }
 
-    // Delete comment Post
+    // Delete comment Article
     public function deletecomment($idcomment) {
       // Create query
-      $query1 = 'UPDATE post SET countcomment = countcomment-1 WHERE id=(SELECT post_id FROM commentpost WHERE  id ="' . $idcomment . '");';
-      $query2 = 'DELETE FROM commentpost WHERE id ="' . $idcomment . '";';
+      $query1 = 'UPDATE article SET countcomment = countcomment-1 WHERE id=(SELECT article_id FROM commentarticle WHERE  id ="' . $idcomment . '");';
+      $query2 = 'DELETE FROM commentarticle WHERE id ="' . $idcomment . '";';
 
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);
@@ -363,10 +363,10 @@
     }
     
     // Create Like Post
-    public function like($token,$idpost) {
+    public function like($token,$idarticle) {
       // Create query
-      $query1 = 'INSERT INTO likepost SET  post_id ="' . $idpost . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '");';
-      $query2 = 'UPDATE post SET countlike = countlike+1 WHERE id = ' . $idpost . ';';
+      $query1 = 'INSERT INTO likearticle SET  article_id ="' . $idarticle . '", user_id=(SELECT id FROM users WHERE token ="' . $token . '");';
+      $query2 = 'UPDATE article SET countlike = countlike+1 WHERE id = ' . $idarticle . ';';
 
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);
@@ -376,7 +376,7 @@
       if($stmt1->execute() && $stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'id' => $idpost
+            'id' => $idarticle
         ))
         );
       }      
@@ -386,11 +386,11 @@
       return false;
     }
 
-    // Delete like Post
+    // Delete like Article
     public function deletelike($idlike) {
       // Create query
-      $query1 = 'UPDATE post SET countlike = countlike-1 WHERE id=(SELECT post_id FROM likepost WHERE  id ="' . $idlike . '");';
-      $query2 = 'DELETE FROM likepost WHERE id ="' . $idlike . '";';
+      $query1 = 'UPDATE article SET countlike = countlike-1 WHERE id=(SELECT article_id FROM likearticle WHERE  id ="' . $idlike . '");';
+      $query2 = 'DELETE FROM likearticle WHERE id ="' . $idlike . '";';
 
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);

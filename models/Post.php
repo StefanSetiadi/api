@@ -248,7 +248,7 @@
       if($stmt1->execute() && $stmt2->execute()){        
         return json_encode(
         array('data' => array (
-            'idpost' => $idpost
+            'id' => $idpost
         ))
         );
       }      
