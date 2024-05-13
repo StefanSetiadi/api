@@ -14,6 +14,7 @@
     public $urlimage;
     public $countlike;
     public $countcomment;
+    
 
     // Constructor with DB
     public function __construct($db) {
@@ -410,7 +411,68 @@
       return false;
     }
 
-
-
+// Method to search articles based on search query
+  public function searchArticles($search_query) {
+    $query = "SELECT * FROM $this->table WHERE title LIKE ? OR content LIKE ?";
     
+    // Prepare statement
+    $stmt = $this->conn->prepare($query);
+
+    // Bind parameters
+    $search_param = "%$search_query%";
+    $stmt->bindParam(1, $search_param);
+    $stmt->bindParam(2, $search_param);
+
+    // Execute query
+    $stmt->execute();
+
+    $articles_arr = array();
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      extract($row);
+
+      $article_item = array(
+        'id' => $id,
+        'title' => $title,
+        'content' => html_entity_decode($content),
+        'category' => $category,
+        'urlimage' => $urlimage
+      );
+
+      array_push($articles_arr, $article_item);
+    }
+
+    return $articles_arr;
+  }
+// Method to recommend articles based on user's behavior or preferences
+  public function recommendArticles($user_id) {
+    // Example: You can implement your recommendation algorithm here based on user's behavior or preferences
+    // For simplicity, let's assume we're just fetching some random articles
+    $query = "SELECT * FROM $this->table ORDER BY RAND() LIMIT 5";
+
+    // Prepare statement
+    $stmt = $this->conn->prepare($query);
+
+    // Execute query
+    $stmt->execute();
+
+    $articles_arr = array();
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      extract($row);
+
+      $article_item = array(
+        'id' => $id,
+        'title' => $title,
+        'content' => html_entity_decode($content),
+        'category' => $category,
+        'urlimage' => $urlimage
+      );
+
+      array_push($articles_arr, $article_item);
+    }
+
+    return $articles_arr;
+  }
+
   }
