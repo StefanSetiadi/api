@@ -456,6 +456,38 @@
       }  
     }
 
+    // Method to search articles based on search query
+  public function searchArticles($search_query) {
+    $query = "SELECT * FROM $this->table WHERE title LIKE ? OR content LIKE ?";
+
+    // Prepare statement
+    $stmt = $this->conn->prepare($query);
+
+    // Bind parameters
+    $search_param = "%$search_query%";
+    $stmt->bindParam(1, $search_param);
+    $stmt->bindParam(2, $search_param);
+    // Execute query
+    $stmt->execute();
+
+    $articles_arr = array();
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      extract($row);
+
+      $article_item = array(
+        'id' => $id,
+        'title' => $title,
+        'content' => html_entity_decode($content),
+        'category' => $category,
+        'urlimage' => $urlimage
+      );
+
+      array_push($articles_arr, $article_item);
+    }
+
+    return $articles_arr;
+    }
 
 
     
