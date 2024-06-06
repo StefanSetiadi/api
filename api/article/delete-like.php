@@ -24,14 +24,14 @@
         $x_authorization = $_SERVER['HTTP_X_AUTHORIZATION'];
         $article = new Article($db);
 
-        if (!isset($data->idlike)) {
+        if (!isset($data->id)) {
             http_response_code(400);
             $errors = [];
-            $errors['idlike'][] = 'The idlike field is required';
+            $errors['id'][] = 'The id field is required';
             echo json_encode(['errors' => $errors]);
             exit();
         }
-        if(!$article->Auth_Check_Like($x_authorization, $data->idlike)){
+        if(!$article->Auth_Check_Like($x_authorization, $data->id)){
             http_response_code(401);
             echo json_encode(
             array('errors' => array (
@@ -41,16 +41,16 @@
             exit();
         }
 
-        if (isset($data->idlike)){
-            $deletelike = $article->deletelike($data->idlike, $x_authorization);
+        if (isset($data->id)){
+            $deletelike = $article->deletelike($data->id, $x_authorization);
             http_response_code(200);
             echo $deletelike;
 
         } else {
             http_response_code(400);
             $errors = [];
-            if (!isset($data->idlike)) {
-                $errors['idlike'][] = 'The idlike field is required';
+            if (!isset($data->id)) {
+                $errors['id'][] = 'The id field is required';
             }
             echo json_encode(['errors' => $errors]);
         }

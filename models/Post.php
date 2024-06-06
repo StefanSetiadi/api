@@ -115,13 +115,13 @@
     }
 
     // Authentication user like post
-    public function Auth_Check_Like($token, $idlike) {
-      $query = 'SELECT * FROM likepost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND id= :idlike';
+    public function Auth_Check_Like($token, $id) {
+      $query = 'SELECT * FROM likepost WHERE user_id=(SELECT id FROM users WHERE token = :token) AND post_id= :id';
       $stmt = $this->conn->prepare($query);
       $token = htmlspecialchars(strip_tags($token));
-      $idlike = htmlspecialchars(strip_tags($idlike));
+      $id = htmlspecialchars(strip_tags($id));
       $stmt->bindParam(':token', $token);
-      $stmt->bindParam(':idlike', $idlike);
+      $stmt->bindParam(':id', $id);
       $stmt->execute();
       $result = $stmt->rowCount();
 
@@ -332,20 +332,22 @@
     }
 
     // Delete like Post
-    public function deletelike($idlike) {
+    public function deletelike($id, $token) {
       // Create query
-      $query1 = 'UPDATE post SET countlike = countlike-1 WHERE id=(SELECT post_id FROM likepost WHERE  id ="' . $idlike . '");';
-      $query2 = 'DELETE FROM likepost WHERE id ="' . $idlike . '";';
+      $query1 = 'UPDATE post SET countlike = countlike-1 WHERE id = :id;';
+      $query2 = 'DELETE FROM likepost WHERE post_id = :id AND user_id=(SELECT id FROM users WHERE token = :token)';
 
       // Prepare statement
       $stmt1 = $this->conn->prepare($query1);
       $stmt2 = $this->conn->prepare($query2);
-
+      $stmt1->bindParam(':id', $id, PDO::PARAM_STR);
+      $stmt2->bindParam(':id', $id, PDO::PARAM_STR);
+      $stmt2->bindParam(':token', $token, PDO::PARAM_STR);
       // Execute query
       if($stmt1->execute() && $stmt2->execute()){    
         return json_encode(
         array('data' => array (
-            'idlike' => $idlike
+            'id' => $id
         ))
         );
       }      
@@ -355,6 +357,46 @@
       return false;
     }
 
+    public function getRecommendation($token){
+      $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) ORDER BY RAND() LIMIT 10';
+      $stmt_total = $this->conn->prepare($query_total);
+      $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
+      $data = [];
+      if($stmt_total->execute()){
+        $result_total = $stmt_total->fetchAll(PDO::FETCH_ASSOC);
+        $index = 0;
+        foreach ($result_total as $item) {
+          $index++;
+          $query1 = 'SELECT * FROM post WHERE id= :id';
+          $query2 = 'SELECT * FROM likepost WHERE post_id = :id';
+          $query3 = 'SELECT * FROM commentpost WHERE post_id = :id';
+          $stmt1 = $this->conn->prepare($query1);
+          $stmt2 = $this->conn->prepare($query2);
+          $stmt3 = $this->conn->prepare($query3);
+          $stmt1->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          $stmt2->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          $stmt3->bindParam(':id', $item['id'], PDO::PARAM_STR);
+          if ($stmt1->execute() &&$stmt2->execute() && $stmt3->execute()) {
+            $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+            $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+            
+          }
+        }
+        return json_encode(array('data' => $data));
+
+      }
+      
+      if ($stmt2->execute() && $stmt3->execute()) {
+          $result1 = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+          $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+          $result3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+          
+          return json_encode(array('data' => $result1,'comment' => $result2, 'like' =>$result3));
+      } else {
+          printf("Error: %s.\n", $stmt->error);
+      }  
+    }
 
 
     
