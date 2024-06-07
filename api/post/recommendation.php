@@ -31,7 +31,12 @@
         exit();
       }
       $post = new Post($db);
-      $post = $post->getRecommendation($user->token);
+      if(isset($_GET['page'])){
+        $page = $_GET['page'];
+      } else {
+        $page = 0;
+      }
+      $post = $post->getRecommendation($user->token, $page);
       http_response_code(200);
       echo $post;
 

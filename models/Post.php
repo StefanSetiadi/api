@@ -357,45 +357,103 @@
       return false;
     }
 
-    public function getRecommendation($token){
-      $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) ORDER BY RAND() LIMIT 10';
-      $stmt_total = $this->conn->prepare($query_total);
-      $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
+    public function getRecommendation($token, $page){
+      session_start();
+      // Ambil nilai page dan limit dari request, dengan default value jika tidak disediakan
+      $page = isset($_GET['page']) ? (int)$_GET['page'] : $page;
+      $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
+      $offset = ($page - 1) * $limit;
+
+      $token = $token; // Sesuaikan dengan token yang ada
+
+      // Cek apakah hasil acak sudah ada di sesi
+      if (!isset($_SESSION['random_ids'])) {
+          // Jika belum, lakukan query untuk mendapatkan ID yang diacak
+          $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) ORDER BY RAND()';
+          $stmt_total = $this->conn->prepare($query_total);
+          $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
+          if ($stmt_total->execute()) {
+              $_SESSION['random_ids'] = $stmt_total->fetchAll(PDO::FETCH_COLUMN);
+          } else {
+              return json_encode(array('error' => 'Failed to fetch data'));
+          }
+      }
+
+      // Ambil total count dari hasil acak
+      $total_count = count($_SESSION['random_ids']);
+      $total_pages = ceil($total_count / $limit);
+
+      // Ambil subset dari hasil acak berdasarkan pagination
+      $random_ids_paginated = array_slice($_SESSION['random_ids'], $offset, $limit);
+
       $data = [];
-      if($stmt_total->execute()){
-        $result_total = $stmt_total->fetchAll(PDO::FETCH_ASSOC);
-        $index = 0;
-        foreach ($result_total as $item) {
-          $index++;
+      foreach ($random_ids_paginated as $index => $id) {
           $query1 = 'SELECT * FROM post WHERE id= :id';
           $query2 = 'SELECT * FROM likepost WHERE post_id = :id';
           $query3 = 'SELECT * FROM commentpost WHERE post_id = :id';
           $stmt1 = $this->conn->prepare($query1);
           $stmt2 = $this->conn->prepare($query2);
           $stmt3 = $this->conn->prepare($query3);
-          $stmt1->bindParam(':id', $item['id'], PDO::PARAM_STR);
-          $stmt2->bindParam(':id', $item['id'], PDO::PARAM_STR);
-          $stmt3->bindParam(':id', $item['id'], PDO::PARAM_STR);
-          if ($stmt1->execute() &&$stmt2->execute() && $stmt3->execute()) {
-            $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
-            $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-            $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
-            
+          $stmt1->bindParam(':id', $id, PDO::PARAM_STR);
+          $stmt2->bindParam(':id', $id, PDO::PARAM_STR);
+          $stmt3->bindParam(':id', $id, PDO::PARAM_STR);
+          if ($stmt1->execute() && $stmt2->execute() && $stmt3->execute()) {
+              $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+              $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+              $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
           }
-        }
-        return json_encode(array('data' => $data));
-
       }
+
+      // Kembalikan hasil dengan informasi pagination
+      echo json_encode(array(
+          'data' => $data,
+          'pagination' => array(
+              'total' => $total_count,
+              'pages' => $total_pages,
+              'current_page' => $page,
+              'limit' => $limit
+          )
+      ));
+
+
+      // $query_total = 'SELECT id FROM post WHERE user_id=(SELECT id FROM users WHERE token = :token) ORDER BY RAND() LIMIT 10';
+      // $stmt_total = $this->conn->prepare($query_total);
+      // $stmt_total->bindParam(':token', $token, PDO::PARAM_STR);
+      // $data = [];
+      // if($stmt_total->execute()){
+      //   $result_total = $stmt_total->fetchAll(PDO::FETCH_ASSOC);
+      //   $index = 0;
+      //   foreach ($result_total as $item) {
+      //     $index++;
+      //     $query1 = 'SELECT * FROM post WHERE id= :id';
+      //     $query2 = 'SELECT * FROM likepost WHERE post_id = :id';
+      //     $query3 = 'SELECT * FROM commentpost WHERE post_id = :id';
+      //     $stmt1 = $this->conn->prepare($query1);
+      //     $stmt2 = $this->conn->prepare($query2);
+      //     $stmt3 = $this->conn->prepare($query3);
+      //     $stmt1->bindParam(':id', $item['id'], PDO::PARAM_STR);
+      //     $stmt2->bindParam(':id', $item['id'], PDO::PARAM_STR);
+      //     $stmt3->bindParam(':id', $item['id'], PDO::PARAM_STR);
+      //     if ($stmt1->execute() &&$stmt2->execute() && $stmt3->execute()) {
+      //       $data[$index]['post'] = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+      //       $data[$index]['like'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+      //       $data[$index]['comment'] = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+            
+      //     }
+      //   }
+      //   return json_encode(array('data' => $data));
+
+      // }
       
-      if ($stmt2->execute() && $stmt3->execute()) {
-          $result1 = $stmt1->fetchAll(PDO::FETCH_ASSOC);
-          $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-          $result3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+      // if ($stmt2->execute() && $stmt3->execute()) {
+      //     $result1 = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+      //     $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+      //     $result3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
           
-          return json_encode(array('data' => $result1,'comment' => $result2, 'like' =>$result3));
-      } else {
-          printf("Error: %s.\n", $stmt->error);
-      }  
+      //     return json_encode(array('data' => $result1,'comment' => $result2, 'like' =>$result3));
+      // } else {
+      //     printf("Error: %s.\n", $stmt->error);
+      // }  
     }
 
 
